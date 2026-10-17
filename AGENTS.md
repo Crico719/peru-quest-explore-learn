@@ -12,3 +12,4 @@
 - Keep the TanStack Start bootstrap and npm startup scripts intact so the preview and published app can start.
 - Typecheck the active PERÚ QUEST source graph rather than unrelated legacy course-generation data, which is not part of this app.
 - Development preview builds use scripts/build-preview.mjs to pin vite.config.ts; preview-injected SPA configurations must not replace TanStack Start's virtual entry points.
+- Keep vite on the major version required by the installed @tanstack/start-plugin-core peer range (currently Vite 8); an older Vite ignores its rolldownOptions entries and fails looking for index.html.
