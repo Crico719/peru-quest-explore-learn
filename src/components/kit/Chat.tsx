@@ -91,196 +91,93 @@ type Suggestion = {
 };
 
 const suggestions: Suggestion[] = [
-  { icon: Calculator, label: "Explica ecuaciones cuadráticas", prompt: "Explícame las ecuaciones cuadráticas de forma sencilla" },
-  { icon: Brain, label: "Dame un ejercicio de razonamiento", prompt: "Dame un ejercicio de razonamiento matemático para practicar" },
-  { icon: BookOpen, label: "Resumen de Historia del Perú", prompt: "Hazme un resumen de la historia del Perú republicano" },
-  { icon: Sparkles, label: "Técnicas de estudio", prompt: "¿Cuáles son las mejores técnicas de estudio para un examen de admisión?" },
+  { icon: BookOpen, label: "Leyendas del Perú", prompt: "Cuéntame leyendas peruanas como la del Dorado o la del Huascarán" },
+  { icon: Brain, label: "Gastronomía regional", prompt: "¿Cuáles son los platos típicos de cada región del Perú?" },
+  { icon: Sparkles, label: "Festividades andinas", prompt: "Explícame el Inti Raymi y otras festividades andinas" },
+  { icon: Calculator, label: "Arte precolombino", prompt: "Háblame de la cerámica Moche y Nazca" },
 ];
 
-const systemPrompt = `Eres un asistente de IA especializado en ayudar a estudiantes peruanos a prepararse para exámenes de admisión universitaria. 
+const systemPrompt = `Eres Inti, asistente de cultura peruana.
 
 Características:
-- Respondes en español
-- Eres amigable y motivador
-- Te especializas en: Matemáticas, Razonamiento Matemático, Razonamiento Verbal, Física, Química, Biología, Literatura, Historia y Geografía
-- Puedes explicar temas, crear ejercicios, y dar consejos de estudio
-- Usas ejemplos prácticos y sencillos
-- Fomentas la confianza del estudiante
+- Respondes en español, con calidez y orgullo cultural.
+- Te especializas en: cultura andina, amazonica y costeña; historia del Perú precolombino y republicano; gastronomía, música, danzas, festividades, leyendas, arte precolombino y patrimonio.
+- Explicas con ejemplos concretos de departamentos y comunidades.
+- Mantienes un tono cercano y motivador, siempre fomentando el respeto por la diversidad cultural peruana.
 
-Materias que cubres:
-1. Matemáticas: Álgebra, geometría, aritmética
-2. Razonamiento Matemático: Sucesiones, ecuaciones, conteo
-3. Razonamiento Verbal: Comprensión lectora, sinónimos, analogías
-4. Física: Dinámica, movimiento, termodinámica
-5. Química: Enlaces, orgánica, inorgánica
-6. Biología: Celular, genética, ecología
-7. Literatura: Corrientes, obras, autores
-8. Historia: Perú republicano, mundial
-9. Geografía: Perú y general`;
+Temas que cubres:
+1. Civilizaciones precolombinas: Caral, Chavín, Mochica, Wari, Tiahuanaco, Inca
+2. Gastronomía: platos regionales, ingredientes nativos
+3. Festividades: Inti Raymi, Fiesta de la Candelaria, Marinera, etc.
+4. Arte y textiles: cerámica, orfebrería, tejidos andinos
+5. Leyendas y mitos: del Huascarán, la Puma, el Dorado
+6. Patrimonio natural y cultural del Perú`;
 
 // Simulación de IA local (reemplazar con Ollama en producción)
 async function simulateAI(userMessage: string, history: Message[]): Promise<string> {
-  // Simular delay de red
-  await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 1500));
-
+  await new Promise((resolve) => setTimeout(resolve, 800 + Math.random() * 700));
   const lowerMessage = userMessage.toLowerCase();
 
-  // Respuestas inteligentes basadas en keywords
-  if (lowerMessage.includes("ecuación") || lowerMessage.includes("cuadrátic")) {
-    return `## Ecuaciones Cuadráticas 📐
+  if (lowerMessage.includes("leyenda") || lowerMessage.includes("dorado") || lowerMessage.includes("huascarán")) {
+    return `## Leyendas del Perú 🇵🇪✨
 
-Una **ecuación cuadrática** tiene la forma:
-\`ax² + bx + c = 0\`
+**Leyenda del Huascarán**
+El Huascarán es la montaña más alta del Perú. Según la leyenda, es el corazón de un joven pastor que amó a una princesa Chachapoya y se convirtió en piedra para seguir vigilando su pueblo.
 
-### Fórmula General
-\`x = (-b ± √(b²-4ac)) / 2a\`
+**El Dorado**
+En la Amazonía se cuenta que El Dorado era un hombre cubierto de oro que se bañaba en las lagunas. Símbolo de la riqueza natural y la imaginación andino-amazónica.
 
-### Ejemplo práctico
-Resolvamos: \`x² - 5x + 6 = 0\`
-
-1. Identificamos: a=1, b=-5, c=6
-2. Calculamos el discriminante: \`b²-4ac = 25-24 = 1\`
-3. Aplicamos la fórmula:
-   - x₁ = (5 + 1)/2 = **3**
-   - x₂ = (5 - 1)/2 = **2**
-
-### ¿Quieres practicar?
-Intenta resolver: \`x² - 7x + 12 = 0\`
-
-¿Necesitas que te explique algún paso? 🎯`;
+¿Quieres que te cuente la leyenda de la Puma o de Manco Cápac?`;
   }
 
-  if (lowerMessage.includes("razonamiento") || lowerMessage.includes("ejercicio")) {
-    return `## Ejercicio de Razonamiento Matemático 🧠
+  if (lowerMessage.includes("gastronomía") || lowerMessage.includes("plato") || lowerMessage.includes("comida")) {
+    return `## Gastronomía regional del Perú 🍲
 
-**Problema:**
-En una sucesión, cada término se obtiene multiplicando el anterior por 3 y sumando 2.
-Si el primer término es 1, ¿cuál es el quinto término?
+**Costa:** Ceviche, tiradito, arroz con mariscos
+**Sierra:** Papa a la huancaína, cuy chactado, queso fresco
+**Selva:** Juane, tacacho con cecina, ensalada de plátano
 
-### Pista
-Analiza el patrón:
-- T₁ = 1
-- T₂ = 1 × 3 + 2 = ?
-- T₃ = ? × 3 + 2 = ?
+Ingredientes nativos: quinua, kiwicha, camote, ají amarillo, maíz morado.
 
-### Solución
-- T₁ = 1
-- T₂ = 1 × 3 + 2 = **5**
-- T₃ = 5 × 3 + 2 = **17**
-- T₄ = 17 × 3 + 2 = **53**
-- T₅ = 53 × 3 + 2 = **161**
-
-**Respuesta: El quinto término es 161** ✅
-
-¿Quieres otro ejercicio más difícil? 💪`;
+¿De qué departamento quieres un plato típico?`;
   }
 
-  if (lowerMessage.includes("historia") || lowerMessage.includes("perú")) {
-    return `## Historia del Perú Republicano 🇵🇪
+  if (lowerMessage.includes("inti raymi") || lowerMessage.includes("festividad") || lowerMessage.includes("fiesta")) {
+    return `## Festividades andinas 🎉
 
-### Época Clave: La República Aristocrática (1826-1836)
+**Inti Raymi** — 24 de junio en Cusco
+Fiesta del Sol en honor a Inti. Procesión, ofrendas y danzas. Celebra el solsticio de invierno y agradece la cosecha.
 
-**Características principales:**
-- Gobernaron los terratenientes y comerciantes
-- Base económica: exportación de guano y algodón
-- Centralismo: Lima era el centro del poder
+Otras festividades:
+- Fiesta de la Candelaria en Puno — música y danza
+- Señor de los Milagros en Lima
+- Virgen de la Candelaria y Qoyllur Rit'i
 
-**Presidentes importantes:**
-1. **Agustín Gamarro** (1829-1833): Primer presidente constitucional
-2. **Ramón Castilla** (1845-1851, 1855-1862): Abolición de la esclavitud
-3. **Miguel de San Román** (1862-1863): Elección democrática
-
-### Datos para el examen
-- La Constitución de 1826 fue la primera
-- El Guano generó mucha riqueza (1840-1860)
-- La Guerra con España fue en 1864-1866
-
-¿Quieres que te genere un ejercicio sobre este tema? 📚`;
+¿Quieres detalles de una región específica?`;
   }
 
-  if (lowerMessage.includes("técnicas") || lowerMessage.includes("estudio") || lowerMessage.includes("consejo")) {
-    return `## Mejores Técnicas de Estudio 📖
+  if (lowerMessage.includes("arte") || lowerMessage.includes("moche") || lowerMessage.includes("nazca") || lowerMessage.includes("cerámica")) {
+    return `## Arte precolombino peruano 🎨
 
-### 1. **Método Pomodoro** ⏱️
-- Estudia 25 minutos sin distracciones
-- Descansa 5 minutos
-- Después de 4 pomodoros, descansa 15-30 min
+**Moche:** Cerámica de retrato con cabezas clínicas, escenas cotidianas y mythológicas. Famosa por su técnica de pulido y colores vivos.
 
-### 2. **Técnica Feynman** 🎯
-- Explica el tema como si enseñaras a alguien
-- Identifica qué no entiendes
-- Vuelve a estudiar esas partes
-- Simplifica con palabras simples
+**Nazca:** Líneas en el desierto y cerámica con personajes antropomorfos. Representan deidades y animales andinos.
 
-### 3. **Repaso Espaciado** 📅
-- Repasa hoy, mañana, en 3 días, en 7 días
-- Mejora la memoria a largo plazo
+**Inca:** Textiles de lana de alpaca, orfebrería en oro y plata, piedra tallada en Machu Picchu.
 
-### 4. **Mapas Mentales** 🗺️
-- Conecta ideas visualmente
-- Usa colores y dibujos
-- Ayuda a ver relaciones entre temas
-
-### 5. **Práctica Activa** ✍️
-- Haz simulacros reales
-- Cronometra el tiempo
-- Analiza tus errores
-
-### Consejo del día
-> "No estudies más horas, estudia mejor horas." 🌟
-
-¿Quieres que profundice en alguna técnica?`;
+¿Te interesa un detalle sobre textiles andinos?`;
   }
 
-  if (lowerMessage.includes("física") || lowerMessage.includes("movimiento")) {
-    return `## Movimiento Uniformemente Acelerado 🚀
+  return `¡Hola! Soy **Inti**, tu asistente de cultura peruana 🇵🇪🦙
 
-### Fórmulas importantes
-\`\`\`
-v = v₀ + at
-x = v₀t + ½at²
-v² = v₀² + 2ax
-\`\`\`
+Puedo contarte sobre:
+📜 Leyendas y mitos andino-amazónicos
+🍲 Gastronomía regional e ingredientes nativos
+🎉 Festividades y danzas
+🎨 Arte precolombino: Moche, Nazca, Inca, Chavín
+🏔️ Historia de los 25 departamentos
 
-### Ejemplo práctico
-Un auto parte del reposo y acelera a 2 m/s². ¿Qué velocidad alcanza en 10 segundos?
-
-**Datos:**
-- v₀ = 0 (parte del reposo)
-- a = 2 m/s²
-- t = 10 s
-
-**Solución:**
-v = 0 + (2)(10) = **20 m/s**
-
-### Convierte las unidades
-- 20 m/s = 72 km/h
-
-¿Quieres que te dé un problema más complejo? 🎯`;
-  }
-
-  // Respuesta genérica
-  return `¡Hola! Soy **MaChat**, tu tutor IA para el examen de admisión. 🎓
-
-Puedo ayudarte con:
-
-📚 **Explicar temas** de cualquier materia
-✏️ **Crear ejercicios** personalizados
-💡 **Darte consejos** de estudio
-📝 **Resúmenes** de temas importantes
-
-**Materias disponibles:**
-- Matemáticas
-- Razonamiento Matemático
-- Razonamiento Verbal
-- Física
-- Química
-- Biología
-- Literatura
-- Historia
-- Geografía
-
-¿Qué materia te gustaría practicar hoy? ¡Estoy aquí para ayudarte a lograr tu meta! 💪`;
+Pregúntame por un departamento, una festividad o una leyenda y te cuento. ¿Por dónde empezamos?`;
 }
 
 export function Chat() {
@@ -352,8 +249,8 @@ export function Chat() {
         <div className="flex items-center gap-2">
           <INtiMascot lang={lang} />
           <div>
-            <h1 className="font-semibold">MaChat</h1>
-            <p className="text-xs text-muted-foreground">Tu tutor IA de estudio</p>
+            <h1 className="font-semibold">Inti — Cultura Perú</h1>
+            <p className="text-xs text-muted-foreground">Asistente cultural del Perú</p>
           </div>
         </div>
         <div className="ml-auto flex items-center gap-1">
@@ -369,10 +266,10 @@ export function Chat() {
             <div className="mb-4 grid size-16 place-items-center rounded-full bg-primary/10">
               <Sparkles className="size-8 text-primary" />
             </div>
-            <h2 className="text-lg font-semibold">¡Hola! Soy MaChat 🎓</h2>
+            <h2 className="text-lg font-semibold">¡Hola! Soy Inti 🇵🇪🦙</h2>
             <p className="mt-2 max-w-md text-sm text-muted-foreground">
-              Tu tutor IA para el examen de admisión.
-              Pregúntame sobre cualquier materia, pide ejercicios o solicita explicaciones.
+              Tu guía de cultura peruana.
+              Pregúntame por leyendas, gastronomía, festividades, arte precolombino y tradiciones de los 25 departamentos.
             </p>
 
             {/* Suggestions */}
