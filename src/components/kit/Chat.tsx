@@ -38,9 +38,9 @@ const INtiMascot = ({ lang }: { lang: string }) => {
   }, [showBubble, lang]);
 
   return (
-    <div className="relative inline-block cursor-pointer animate-pulse" onClick={() => setShowBubble(true)}>
+    <div className="relative inline-block cursor-pointer" onClick={() => setShowBubble(true)} title="Inti tu mascota">
       <div className="block">
-        <svg viewBox="0 0 200 200" width="36" height="36" className="block">
+        <svg viewBox="0 0 200 200" width="48" height="48" className="block">
           <defs>
             <linearGradient id="intiBody" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#ffffff" />
