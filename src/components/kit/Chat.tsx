@@ -284,6 +284,7 @@ Puedo ayudarte con:
 }
 
 export function Chat() {
+  // Inti mascot integration active - 2026-10-17
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
