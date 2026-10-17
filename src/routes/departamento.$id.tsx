@@ -20,6 +20,8 @@ export const Route = createFileRoute("/departamento/$id")({
         { name: "description", content: `Historia, lugares, gastronomía y fiestas de ${n}, con quiz y minijuegos.` },
         { property: "og:title", content: `${n} — PERÚ QUEST` },
         { property: "og:description", content: `Aprende sobre ${n} jugando en PERÚ QUEST.` },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
       ],
     };
   },
@@ -43,7 +45,8 @@ function Section({ title, text, children }: { title: string; text: string; child
 
 function DeptPage() {
   const { id } = Route.useLoaderData();
-  const base = DEPARTMENTS.find((x) => x.id === id)!;
+  const base = DEPARTMENTS.find((x) => x.id === id);
+  if (!base) throw notFound();
   const g = useGame();
   const d = locDept(base, g.lang);
   const { data: img } = useWikiImage(d.wiki);

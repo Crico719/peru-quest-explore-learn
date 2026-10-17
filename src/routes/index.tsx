@@ -13,6 +13,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Camino tipo Duolingo por los departamentos del Perú: historia, gastronomía, quizzes y minijuegos." },
       { property: "og:title", content: "PERÚ QUEST — Aprende el Perú jugando" },
       { property: "og:description", content: "Gana XP, gemas y coronas recorriendo los 25 departamentos del Perú." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,
@@ -92,7 +94,7 @@ function Index() {
 
     return (
       <div key={d.id} style={{ transform: `translateX(${offset}px)` }} className="flex flex-col items-center gap-2">
-        <div className="relative group cursor-pointer">
+        <Link to="/departamento/$id" params={{ id: d.id }} aria-label={d.name} className="relative group cursor-pointer">
           <div className="relative">
             {/* Círculo progresivo (aro como Duolingo) */}
             <svg className="w-28 h-28" viewBox="0 0 44 44">
@@ -114,7 +116,7 @@ function Index() {
             <div className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-600" style={{ width: `${pctDept}%` }} />
           </div>
           <span className="text-[10px] font-bold">{pctDept}%</span>
-        </div>
+        </Link>
       </div>
     );
   };

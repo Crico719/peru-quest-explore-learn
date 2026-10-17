@@ -1,17 +1,23 @@
 {
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "vite.config.ts",
-    "vitest.config.ts",
-    "eslint.config.js"
+    "src/router.tsx",
+    "src/start.ts",
+    "src/server.ts",
+    "src/routes/**/*.tsx",
+    "src/lib/**/*",
+    "src/components/Games.tsx",
+    "src/components/TopBar.tsx",
+    "src/components/PwaRegistrar.tsx",
+    "src/components/kit/Chat.tsx",
+    "src/data/departments.ts",
+    "vite.config.ts"
   ],
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",
     "module": "ESNext",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["vite/client", "vitest/globals"],
+    "types": ["vite/client"],
 
     "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,

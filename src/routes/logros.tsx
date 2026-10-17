@@ -9,6 +9,8 @@ export const Route = createFileRoute("/logros")({
       { name: "description", content: "Tus logros, XP, gemas y racha en PERÚ QUEST." },
       { property: "og:title", content: "Logros — PERÚ QUEST" },
       { property: "og:description", content: "Mira tus medallas por conocer el Perú." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Logros,
