@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Bot, User, Sparkles, BookOpen, Brain, Calculator, Owl } from "lucide-react";
+import { Send, Bot, User, Sparkles, BookOpen, Brain, Calculator } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const INTI_TASKS = {
@@ -21,7 +21,7 @@ const INTI_TASKS = {
 
 const intiMsg = (lang: string) => {
   const arr = INTI_TASKS[lang as "es" | "en"];
-  return arr[Math.floor(Math.random() * arr.length)];
+  return arr[Math.floor(Math.random() * arr.length)] ?? arr[0] ?? "¡Vamos, Inti te acompaña!";
 };
 
 const INtiMascot = ({ lang }: { lang: string }) => {
@@ -34,6 +34,7 @@ const INtiMascot = ({ lang }: { lang: string }) => {
       const timer = setTimeout(() => setShowBubble(false), 3000);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [showBubble, lang]);
 
   return (
