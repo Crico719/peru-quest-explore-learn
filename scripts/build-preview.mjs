@@ -1,10 +1,9 @@
 import { spawnSync } from "node:child_process";
-import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 
 // The preview runner may append a SPA-only --config argument. TanStack Start
 // must always build with the app's config, which supplies its virtual entries.
-const require = createRequire(import.meta.url);
-const viteBin = require.resolve("vite/bin/vite.js");
+const viteBin = fileURLToPath(new URL("../node_modules/vite/bin/vite.js", import.meta.url));
 
 const result = spawnSync(
   process.execPath,
