@@ -5,6 +5,7 @@ import { useGame, exportEvidence } from "@/lib/game";
 import { t } from "@/lib/i18n";
 import { useWikiImage } from "@/lib/wiki";
 import { Progress } from "@/components/ui/progress";
+import { Mascot } from "@/components/Mascot";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -133,24 +134,7 @@ function Index() {
             <div className="mt-2 flex items-center gap-3">
               <h1 className="text-4xl font-bold sm:text-5xl">PERÚ QUEST</h1>
               <div className="relative cursor-pointer" title="Inti tu mascota">
-                <svg viewBox="0 0 200 200" width="48" height="48" className="block">
-                  <defs>
-                    <linearGradient id="intiBodyRoot" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#ffffff" />
-                      <stop offset="100%" stopColor="#e7e5e4" />
-                    </linearGradient>
-                  </defs>
-                  <ellipse cx="95" cy="142" rx="40" ry="30" fill="url(#intiBodyRoot)" stroke="#d6d3d1" strokeWidth="2" />
-                  <ellipse cx="70" cy="132" rx="26" ry="25" fill="#e7e5e4" />
-                  <ellipse cx="140" cy="92" rx="20" ry="22" fill="url(#intiBodyRoot)" stroke="#d6d3d1" strokeWidth="2" />
-                  <ellipse cx="114" cy="106" rx="12" ry="24" fill="url(#intiBodyRoot)" stroke="#d6d3d1" strokeWidth="2" />
-                  <ellipse cx="128" cy="80" rx="6" ry="13" fill="url(#intiBodyRoot)" stroke="#d6d3d1" strokeWidth="2" transform="rotate(-30 128 80)" />
-                  <ellipse cx="152" cy="76" rx="6" ry="13" fill="url(#intiBodyRoot)" stroke="#d6d3d1" strokeWidth="2" transform="rotate(30 152 76)" />
-                  <circle cx="130" cy="88" rx="4" fill="#1a202c" />
-                  <circle cx="132" cy="86" rx="2" fill="white" />
-                  <circle cx="150" cy="88" rx="4" fill="#1a202c" />
-                  <circle cx="152" cy="86" rx="2" fill="white" />
-                </svg>
+                <Mascot size={48} />
               </div>
             </div>
             <p className="mt-2 text-lg font-medium">{t(g.lang, "tagline")}</p>

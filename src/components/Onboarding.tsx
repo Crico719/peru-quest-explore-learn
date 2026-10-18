@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Mascot } from "@/components/Mascot";
 
 type Step = {
   title: string;
@@ -29,22 +30,7 @@ const STEPS: Step[] = [
   },
 ];
 
-const INTI_SVG = (
-  <svg viewBox="0 0 200 200" width="120" height="120" className="block">
-    <defs>
-      <linearGradient id="intiOnboarding" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#ffffff" />
-        <stop offset="100%" stopColor="#e7e5e4" />
-      </linearGradient>
-    </defs>
-    <ellipse cx="95" cy="142" rx="40" ry="30" fill="url(#intiOnboarding)" stroke="#d6d3d1" strokeWidth="2" />
-    <ellipse cx="70" cy="132" rx="26" ry="25" fill="#e7e5e4" />
-    <ellipse cx="140" cy="92" rx="20" ry="22" fill="url(#intiOnboarding)" stroke="#d6d3d1" strokeWidth="2" />
-    <ellipse cx="114" cy="106" rx="12" ry="24" fill="url(#intiOnboarding)" stroke="#d6d3d1" strokeWidth="2" />
-    <circle cx="130" cy="88" rx="4" fill="#1a202c" />
-    <circle cx="150" cy="88" rx="4" fill="#1a202c" />
-  </svg>
-);
+
 
 export function Onboarding({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState(0);
@@ -74,7 +60,7 @@ export function Onboarding({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true">
       <div className={`w-full max-w-lg rounded-3xl bg-card p-6 shadow-2xl ${reduced ? "" : "animate-in fade-in zoom-in"}`}>
         <div className="flex items-start gap-4">
-          <div className="shrink-0">{INTI_SVG}</div>
+          <div className="shrink-0"><Mascot size={120} /></div>
           <div className="flex-1">
             <h2 className="text-2xl font-bold">¡Hola! Soy Inti ☀️</h2>
             <p className="mt-1 text-sm text-muted-foreground">
