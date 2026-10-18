@@ -41,7 +41,7 @@ function Index() {
   const g = useGame();
   const { data: hero } = useWikiImage("Machu_Picchu");
   const [q, setQ] = useState("");
-  const [region, setRegion] = useState<"Todos" | "Costa" | "Sierra" | "Selva">("Todos");
+  const [region, setRegion] = useState<"Costa" | "Sierra" | "Selva">("Costa");
   const [selected, setSelected] = useState<string | null>(null);
   const [deptImages, setDeptImages] = useState<Record<string, string>>({});
 
@@ -76,10 +76,10 @@ function Index() {
   const pct = Math.round((totalCrowns / maxCrowns) * 100);
   const currentIdx = DEPARTMENTS.findIndex((d, i) => g.unlocked(i) && g.crowns(d.id) < 4);
   const tip = TIPS[g.lang][new Date().getDate() % TIPS[g.lang].length];
-  const regions: ("Todos" | "Costa" | "Sierra" | "Selva")[] = ["Todos", "Costa", "Sierra", "Selva"];
-  const filtering = q.trim() !== "" || region !== "Todos";
+  const regions: ("Costa" | "Sierra" | "Selva")[] = ["Costa", "Sierra", "Selva"];
+  const filtering = q.trim() !== "";
   const visible = DEPARTMENTS.map((d, i) => ({ d, i })).filter(
-    (x) => (region === "Todos" || x.d.region === region) &&
+    (x) => (x.d.region === region) &&
       x.d.name.toLowerCase().includes(q.trim().toLowerCase())
   );
   const sel = selected ? DEPARTMENTS.find((d) => d.id === selected) : undefined;
@@ -182,18 +182,24 @@ function Index() {
           aria-label={t(g.lang, "search")}
           className="rounded-2xl border-2 border-input bg-card px-4 py-3 font-semibold outline-none placeholder:text-muted-foreground focus:border-primary"
         />
-        <div className="flex flex-wrap justify-center gap-2">
-          {regions.map((r) => (
-            <button
-              key={r}
-              onClick={() => setRegion(r)}
-              className={`rounded-full px-4 py-2 text-sm font-bold ${
-                region === r ? "bg-primary text-primary-foreground shadow-[0_3px_0_var(--primary-shadow)]" : "bg-card text-muted-foreground"
-              }`}
-            >
-              {r === "Todos" ? t(g.lang, "all") : r === "Costa" ? t(g.lang, "coast") : r === "Sierra" ? t(g.lang, "highlands") : t(g.lang, "jungle")}
-            </button>
-          ))}
+        <div className="flex flex-wrap justify-center gap-3">
+          {regions.map((r) => {
+            const label = r === "Costa" ? t(g.lang, "coast") : r === "Sierra" ? t(g.lang, "highlands") : t(g.lang, "jungle");
+            const desc = r === "Costa" ? "Litoral pacífico, desiertos y playas" : r === "Sierra" ? "Andes, valles y altiplano" : "Amazonía, selva y ríos";
+            return (
+              <button
+                key={r}
+                onClick={() => setRegion(r)}
+                className={`rounded-2xl px-4 py-3 text-sm font-bold text-center w-40 ${
+                  region === r ? "bg-primary text-primary-foreground shadow-[0_3px_0_var(--primary-shadow)]" : "bg-card text-muted-foreground"
+                }`}
+                title={desc}
+              >
+                <div>{label}</div>
+                <div className="text-[10px] font-normal opacity-70 mt-1">{desc}</div>
+              </button>
+            );
+          })}
         </div>
       </div>
       {filtering ? (
@@ -211,7 +217,7 @@ function Index() {
         </div>
       ) : (
         <div className="relative mx-auto mt-6 flex max-w-md flex-col items-center gap-6">
-          {DEPARTMENTS.map((d, i) => node(d, i))}
+          {DEPARTMENTS.filter(d => d.region === region).map((d, i) => node(d, i))}
           <div className="text-5xl">🏆</div>
         </div>
       )}
