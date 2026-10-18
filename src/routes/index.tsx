@@ -173,7 +173,9 @@ function Index() {
             </div>
             <p className="mt-2 text-lg font-medium drop-shadow-sm">{t(g.lang, "tagline")}</p>
             <p className="mt-2 inline-flex rounded-2xl bg-black/25 px-3 py-1.5 text-sm font-semibold backdrop-blur-sm">🦉 {t(g.lang, "tip")}: {tip}</p>
-            <button onClick={() => setPracticeMode(v => !v)} className="mt-2 btn-3d px-4 py-2 text-sm">{practiceMode ? 'Modo normal' : 'Modo práctica'}</button>
+            <button onClick={() => setPracticeMode(v => !v)} className="mt-2 btn-3d rounded-2xl px-4 py-2 text-sm font-bold">
+              {practiceMode ? "🎯 Práctica: ON (toca un departamento)" : "🎯 Modo práctica: localización"}
+            </button>
           </div>
           <dl className="grid grid-cols-2 gap-2 text-sm">
             {info.map(([k, v]) => (
