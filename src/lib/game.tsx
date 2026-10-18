@@ -69,26 +69,29 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const complete = useCallback((dept: string, a: Activity, score: number, max: number) => {
     const xp = a === "quiz" ? score * 10 : 15;
+    const p = { ...(s.progress[dept] ?? {}) };
+    const firstTime = a === "quiz" ? p.quiz === undefined : !p[a];
+    const gainedXp = firstTime ? xp : 0;
+    const gems = (firstTime ? 5 : 0) + (score === max ? 2 : 0);
+
     setS((prev) => {
-      const p = { ...(prev.progress[dept] ?? {}) };
-      const firstTime = a === "quiz" ? p.quiz === undefined : !p[a];
-      if (a === "quiz") p.quiz = Math.max(p.quiz ?? 0, score);
-      else p[a] = true;
+      const current = { ...(prev.progress[dept] ?? {}) };
+      if (a === "quiz") current.quiz = Math.max(current.quiz ?? 0, score);
+      else current[a] = true;
       const d = today();
       let streak = prev.streak;
       if (prev.lastDay !== d) {
         const y = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
         streak = prev.lastDay === y ? streak + 1 : 1;
       }
-      const gems = (firstTime ? 5 : 0) + (score === max ? 2 : 0);
       return {
-        ...prev, xp: prev.xp + xp, gems: prev.gems + gems, streak, lastDay: d,
-        progress: { ...prev.progress, [dept]: p },
-        log: [...prev.log, { at: new Date().toISOString(), dept, activity: a, score, max, xp }],
+        ...prev, xp: prev.xp + gainedXp, gems: prev.gems + gems, streak, lastDay: d,
+        progress: { ...prev.progress, [dept]: current },
+        log: [...prev.log, { at: new Date().toISOString(), dept, activity: a, score, max, xp: gainedXp }],
       };
     });
-    return xp;
-  }, []);
+    return gainedXp;
+  }, [s]);
 
   const seeFact = useCallback((dept: string, i: number) => {
     setS((prev) => {

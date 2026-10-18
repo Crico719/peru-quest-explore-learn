@@ -23,7 +23,7 @@ const SOUNDS: Record<SoundType, string> = {
   xp: 'https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3', // Short sparkle/pop
   correct: 'https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3', // Positive chime
   incorrect: 'https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3', // Soft thud/error
-  crown: 'https://assets.mixkit.co/active_storage/sfx/201 la.mp3', // Fanfare/Victory (placeholder)
+  crown: 'https://assets.mixkit.co/active_storage/sfx/2014/2014-preview.mp3', // Fanfare/Victory (placeholder)
   levelUp: 'https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3', // Level up chime
   click: 'https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3', // Soft click
 };

@@ -3,6 +3,7 @@ import { Send, Bot, User, Sparkles, BookOpen, Brain, Calculator } from "lucide-r
 import { cn } from "@/lib/utils";
 import { useGame } from "@/lib/game";
 import { IntiMascot } from "@/components/IntiMascot";
+import { reportLovableError } from "@/lib/lovable-error-reporting";
 
 const INTI_TASKS = {
   es: [
@@ -89,12 +90,18 @@ Temas que cubres:
 5. Leyendas y mitos: del Huascarán, la Puma, el Dorado
 6. Patrimonio natural y cultural del Perú`;
 
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW_MS = 60_000;
+
 export function Chat() {
   // Inti mascot integration active - 2026-10-17
   const g = useGame();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [rateLimited, setRateLimited] = useState(false);
+  const [rateLimitResetAt, setRateLimitResetAt] = useState<number | null>(null);
+  const messageTimestampsRef = useRef<number[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -106,21 +113,60 @@ export function Chat() {
     scrollToBottom();
   }, [messages]);
 
+  useEffect(() => {
+    if (rateLimited && rateLimitResetAt) {
+      const now = Date.now();
+      if (now >= rateLimitResetAt) {
+        setRateLimited(false);
+        setRateLimitResetAt(null);
+        messageTimestampsRef.current = messageTimestampsRef.current.filter(t => now - t < RATE_LIMIT_WINDOW_MS);
+        return undefined;
+      }
+      const timer = setTimeout(() => {
+        setRateLimited(false);
+        setRateLimitResetAt(null);
+        messageTimestampsRef.current = messageTimestampsRef.current.filter(t => Date.now() - t < RATE_LIMIT_WINDOW_MS);
+      }, rateLimitResetAt - now);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [rateLimited, rateLimitResetAt]);
+
+  const isRateLimited = () => {
+    const now = Date.now();
+    messageTimestampsRef.current = messageTimestampsRef.current.filter(t => now - t < RATE_LIMIT_WINDOW_MS);
+    return messageTimestampsRef.current.length >= RATE_LIMIT_MAX;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = input.trim();
     if (!trimmed || isTyping) return;
+    if (isRateLimited()) {
+      const now = Date.now();
+      const oldest = Math.min(...messageTimestampsRef.current);
+      const resetAt = oldest + RATE_LIMIT_WINDOW_MS;
+      setRateLimited(true);
+      setRateLimitResetAt(resetAt);
+      const msg = g.lang === 'es'
+        ? `Has alcanzado el límite de ${RATE_LIMIT_MAX} mensajes por minuto. Inténtalo de nuevo en ${Math.ceil((resetAt - now) / 1000)}s.`
+        : `You've reached the ${RATE_LIMIT_MAX} messages per minute limit. Try again in ${Math.ceil((resetAt - now) / 1000)}s.`;
+      setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'assistant', content: msg, timestamp: new Date() }]);
+      return;
+    }
     if (trimmed.length > 2000) {
-      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: 'Mensaje demasiado largo. Máximo 2000 caracteres.', timestamp: new Date() }]);
+      setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'assistant', content: g.lang === 'es' ? 'Mensaje demasiado largo. Máximo 2000 caracteres.' : 'Message too long. Maximum 2000 characters.', timestamp: new Date() }]);
       return;
     }
 
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       role: "user",
       content: trimmed,
       timestamp: new Date(),
     };
+
+    messageTimestampsRef.current = [...messageTimestampsRef.current, Date.now()];
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
@@ -159,7 +205,7 @@ export function Chat() {
       }
 
       const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: crypto.randomUUID(),
         role: "assistant",
         content: data.answer,
         timestamp: new Date(),
@@ -167,10 +213,15 @@ export function Chat() {
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err: any) {
       const isAbort = err?.name === 'AbortError';
+      reportLovableError(err, {
+        source: "chat",
+        route: "/asistente",
+        userMessage: trimmed,
+      });
       const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: crypto.randomUUID(),
         role: "assistant",
-        content: isAbort ? `Tiempo de espera agotado. Inténtalo de nuevo.` : `Lo siento, no pude obtener una respuesta. ${err?.message || ""}`.trim(),
+        content: isAbort ? (g.lang === 'es' ? 'Tiempo de espera agotado. Inténtalo de nuevo.' : 'Request timed out. Try again.') : `Lo siento, no pude obtener una respuesta. ${err?.message || ""}`.trim(),
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);

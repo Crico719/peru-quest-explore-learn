@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npx tsx src/lib/game.test.ts",
     "dev": "vite dev --host 0.0.0.0 --port 8080",
     "build": "vite build",
     "build:dev": "node scripts/build-preview.mjs",
