@@ -41,7 +41,7 @@ function Index() {
   const g = useGame();
   const { data: hero } = useWikiImage("Machu_Picchu");
   const [q, setQ] = useState("");
-  const [region, setRegion] = useState<"Costa" | "Sierra" | "Selva">("Costa");
+  const [region, setRegion] = useState<"Costa" | "Sierra" | "Selva" | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [deptImages, setDeptImages] = useState<Record<string, string>>({});
 
@@ -79,7 +79,7 @@ function Index() {
   const regions: ("Costa" | "Sierra" | "Selva")[] = ["Costa", "Sierra", "Selva"];
   const filtering = q.trim() !== "";
   const visible = DEPARTMENTS.map((d, i) => ({ d, i })).filter(
-    (x) => (x.d.region === region) &&
+    (x) => (!region || x.d.region === region) &&
       x.d.name.toLowerCase().includes(q.trim().toLowerCase())
   );
   const sel = selected ? DEPARTMENTS.find((d) => d.id === selected) : undefined;
@@ -182,26 +182,44 @@ function Index() {
           aria-label={t(g.lang, "search")}
           className="rounded-2xl border-2 border-input bg-card px-4 py-3 font-semibold outline-none placeholder:text-muted-foreground focus:border-primary"
         />
-        <div className="flex flex-wrap justify-center gap-3">
+      </div>
+      {!filtering && region === null && (
+        <div className="mx-auto mt-6 flex max-w-2xl flex-col gap-6">
           {regions.map((r) => {
             const label = r === "Costa" ? t(g.lang, "coast") : r === "Sierra" ? t(g.lang, "highlands") : t(g.lang, "jungle");
             const desc = r === "Costa" ? "Litoral pacífico, desiertos y playas" : r === "Sierra" ? "Andes, valles y altiplano" : "Amazonía, selva y ríos";
+            const emoji = REGION_EMOJI[r];
+            const depts = DEPARTMENTS.filter((d) => d.region === r);
+            const crowns = depts.reduce((n, d) => n + g.crowns(d.id), 0);
+            const max = depts.length * 4;
+            const pctR = Math.round((crowns / max) * 100);
+            const started = crowns > 0;
             return (
-              <button
-                key={r}
-                onClick={() => setRegion(r)}
-                className={`rounded-2xl px-4 py-3 text-sm font-bold text-center w-40 ${
-                  region === r ? "bg-primary text-primary-foreground shadow-[0_3px_0_var(--primary-shadow)]" : "bg-card text-muted-foreground"
-                }`}
-                title={desc}
-              >
-                <div>{label}</div>
-                <div className="text-[10px] font-normal opacity-70 mt-1">{desc}</div>
-              </button>
+              <div key={r} className="flex items-center gap-4 rounded-3xl border-2 border-border bg-card p-5 sm:p-6">
+                <div className="flex-1">
+                  <p className="text-xs font-bold uppercase tracking-wide text-primary">{depts.length} departamentos</p>
+                  <h3 className="mt-1 text-2xl font-bold">{emoji} {label}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
+                  <div className="mt-3 flex items-center gap-2">
+                    <div className="h-4 flex-1 overflow-hidden rounded-full bg-muted">
+                      <div className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-600 transition-all" style={{ width: `${pctR}%` }} />
+                    </div>
+                    <span className="text-xs font-bold text-muted-foreground">{pctR}%</span>
+                    <span className="text-xl">🏆</span>
+                  </div>
+                  <button
+                    onClick={() => setRegion(r)}
+                    className="btn-3d mt-4 w-full py-3 text-center sm:w-56"
+                  >
+                    {started ? "CONTINUAR" : t(g.lang, "start2").toUpperCase()}
+                  </button>
+                </div>
+                <div className="hidden text-7xl sm:block">{emoji}</div>
+              </div>
             );
           })}
         </div>
-      </div>
+      )}
       {filtering ? (
         <div className="mx-auto mt-6 grid max-w-2xl grid-cols-2 gap-3 sm:grid-cols-3">
           {visible.map(({ d }) => (
@@ -216,10 +234,15 @@ function Index() {
           {visible.length === 0 && <p className="col-span-full text-center text-muted-foreground">🔍 …</p>}
         </div>
       ) : (
+        region !== null && (
         <div className="relative mx-auto mt-6 flex max-w-md flex-col items-center gap-6">
+          <button onClick={() => setRegion(null)} className="self-start text-sm font-bold text-muted-foreground hover:text-foreground">
+            ← {t(g.lang, "back")}
+          </button>
           {DEPARTMENTS.filter(d => d.region === region).map((d, i) => node(d, i))}
           <div className="text-5xl">🏆</div>
         </div>
+        )
       )}
       {sel && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-4 sm:items-center" onClick={() => setSelected(null)}>
