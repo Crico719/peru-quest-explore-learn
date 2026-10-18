@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { DEPARTMENTS, PERU, REGION_EMOJI } from "@/data/departments";
 import { useGame, exportEvidence } from "@/lib/game";
@@ -6,6 +6,7 @@ import { t } from "@/lib/i18n";
 import { useWikiImage } from "@/lib/wiki";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
+import { PracticeModal } from "@/components/PracticeModal";
 import { IntiMascot } from "@/components/IntiMascot";
 
 export const Route = createFileRoute("/")({
@@ -98,6 +99,11 @@ function Index() {
   const tip = TIPS[g.lang][new Date().getDate() % TIPS[g.lang].length];
   const regions: ("Costa" | "Sierra" | "Selva")[] = ["Costa", "Sierra", "Selva"];
   const filtering = q.trim() !== "";
+   const navigate = useNavigate();
+const handleNodeSelect = (id: string) => {
+      if (practiceMode) setSelectedDept(id);
+      else navigate(`departamento/${id}`);
+    }
   const visible = DEPARTMENTS.map((d, i) => ({ d, i })).filter(
     (x) => (!region || x.d.region === region) &&
       x.d.name.toLowerCase().includes(q.trim().toLowerCase())
@@ -114,7 +120,7 @@ function Index() {
 
     return (
       <div key={d.id} style={{ transform: `translateX(${offset}px)` }} className="flex flex-col items-center gap-2">
-        <Link to="/departamento/$id" params={{ id: d.id }} aria-label={d.name} className="group relative cursor-pointer transition-transform duration-200 motion-safe:hover:scale-105">
+        <button onClick={() => handleNodeSelect(d.id)} aria-label={d.name} className="group relative cursor-pointer transition-transform duration-200 motion-safe:hover:scale-105">
           <div className={cn("relative rounded-full", isCurrent && "node-current-ring")}>
             {/* Círculo progresivo (aro como Duolingo) */}
             <svg className="h-28 w-28" viewBox="0 0 44 44" aria-hidden="true">
@@ -297,7 +303,7 @@ function Index() {
                 ) : (
                   <span className="text-4xl">{d.emoji}</span>
                 )}
-              </Link>
+</button>
               <span className="mt-1 text-sm font-semibold">{d.name}</span>
               <span className="text-xs text-muted-foreground">{REGION_EMOJI[d.region]} {d.region}</span>
             </div>
@@ -342,5 +348,6 @@ function Index() {
         </div>
       )}
     </main>
+<PracticeModal open={!!selectedDept} onClose={() => setSelectedDept(null)} deptId={selectedDept} />
   );
 }
