@@ -109,16 +109,6 @@ function BottomNav() {
         <span>Inicio</span>
       </Link>
       <Link 
-        to="/" 
-        hash="camino" 
-        activeProps={{ className: "text-primary scale-110" }}
-        inactiveProps={{ className: "text-muted-foreground hover:text-primary" }}
-        className="flex flex-col items-center gap-1 text-xs font-bold transition-all"
-      >
-        <span className="text-2xl">📍</span>
-        <span>Explorar</span>
-      </Link>
-      <Link 
         to="/logros" 
         activeProps={{ className: "text-primary scale-110" }}
         inactiveProps={{ className: "text-muted-foreground hover:text-primary" }}
