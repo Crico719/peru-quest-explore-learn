@@ -56,16 +56,16 @@ function Perfil() {
             </div >
           </div >
 
-          {/* Promo Card */}
-          <div className="flex items-center justify-between rounded-3xl border-2 border-border bg-white p-6 shadow-sm">
+          {/* Promo Card - Demo */}
+          <div className="flex items-center justify-between rounded-3xl border-2 border-dashed border-border bg-muted/30 p-6 shadow-sm">
             <div className="space-y-2">
-              <h3 className="text-lg font-bold">¡Lleva tu progreso a LinkedIn!</h3>
-              <p className="text-sm text-muted-foreground">Comparte tus logros de cultura peruana con el mundo.</p>
-              <button className="rounded-xl bg-sky-500 px-4 py-2 text-sm font-bold text-white hover:bg-sky-600 transition-colors">
-                CONECTAR AHORA
+              <h3 className="text-lg font-bold">Integración social — Demostración</h3>
+              <p className="text-sm text-muted-foreground">La conexión con LinkedIn y funciones sociales son de demostración. No se comparten datos reales.</p>
+              <button disabled className="cursor-not-allowed rounded-xl bg-muted px-4 py-2 text-sm font-bold text-muted-foreground">
+                PRÓXIMAMENTE
               </button>
             </div >
-            <div className="hidden size-20 items-center justify-center rounded-full bg-sky-100 text-4xl sm:flex">
+            <div className="hidden size-20 items-center justify-center rounded-full bg-muted text-4xl sm:flex">
               🌐
             </div >
           </div >
@@ -110,7 +110,7 @@ function Perfil() {
           {/* Friend Suggestions */}
           <div className="space-y-4">
             <div className="flex items-center justify-between px-2">
-              <h2 className="text-xl font-bold">Sugerencias de amigos</h2>
+              <h2 className="text-xl font-bold">Sugerencias de amigos <span className="text-xs font-normal text-muted-foreground">(demo)</span></h2>
               <button className="text-sm font-bold text-sky-500 hover:underline">VER TODOS</button>
             </div >
             <div className="grid gap-3">
@@ -136,7 +136,7 @@ function Perfil() {
         <div className="space-y-6">
           <div className="rounded-3xl border-2 border-border bg-white p-6 shadow-sm">
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-lg font-bold">Actividad</h2>
+              <h2 className="text-lg font-bold">Actividad <span className="text-xs font-normal text-muted-foreground">(demo)</span></h2>
               <div className="flex gap-2">
                 <button className="text-xs font-bold text-sky-500 border-b-2 border-sky-500">SIGUIENDO</button>
                 <button className="text-xs font-bold text-muted-foreground hover:text-sky-500">SEGUIDORES</button>

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, Bot, User, Sparkles, BookOpen, Brain, Calculator } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useGame } from "@/lib/game";
 
 const INTI_TASKS = {
   es: [
@@ -115,10 +116,10 @@ Temas que cubres:
 
 export function Chat() {
   // Inti mascot integration active - 2026-10-17
+  const g = useGame();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [lang, setLang] = useState<"es" | "en">("es");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -132,12 +133,17 @@ export function Chat() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isTyping) return;
+    const trimmed = input.trim();
+    if (!trimmed || isTyping) return;
+    if (trimmed.length > 2000) {
+      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: 'Mensaje demasiado largo. Máximo 2000 caracteres.', timestamp: new Date() }]);
+      return;
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
-      content: input.trim(),
+      content: trimmed,
       timestamp: new Date(),
     };
 
@@ -147,20 +153,26 @@ export function Chat() {
 
     try {
       const history = messages
-        .map(m => ({ role: m.role as 'user' | 'assistant', content: String(m.content) }))
+        .slice(-10)
+        .map(m => ({ role: m.role as 'user' | 'assistant', content: String(m.content).slice(0, 2000) }))
         .filter(h => typeof h.role === 'string' && typeof h.content === 'string');
 
-      const langInstruction = lang === 'en' ? "Respond in English. " : "Responde en español. ";
+      const langInstruction = g.lang === 'en' ? "Respond in English. " : "Responde en español. ";
       const payload = {
         message: langInstruction + String(userMessage.content),
         history
       };
 
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+
       const res = await fetch("https://inti-cultura-peru.christopherdaniel0120.workers.dev/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal
       });
+      clearTimeout(timeout);
 
       if (!res.ok) {
         throw new Error(`Error del servidor: ${res.status}`);
@@ -179,10 +191,11 @@ export function Chat() {
       };
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err: any) {
+      const isAbort = err?.name === 'AbortError';
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: `Lo siento, no pude obtener una respuesta. ${err?.message || ""}`.trim(),
+        content: isAbort ? `Tiempo de espera agotado. Inténtalo de nuevo.` : `Lo siento, no pude obtener una respuesta. ${err?.message || ""}`.trim(),
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -205,19 +218,19 @@ export function Chat() {
             <Bot className="size-5 text-primary" />
           </div>
           <div className="flex items-center gap-2">
-            <INtiMascot lang={lang} />
+            <INtiMascot lang={g.lang} />
             <div>
-              <h1 className="font-semibold">{lang === 'es' ? 'Inti — Cultura Perú' : 'Inti — Peru Culture'}</h1>
-              <p className="text-xs text-muted-foreground">{lang === 'es' ? 'Asistente cultural del Perú' : 'Cultural assistant of Peru'}</p>
+              <h1 className="font-semibold">{g.lang === 'es' ? 'Inti — Cultura Perú' : 'Inti — Peru Culture'}</h1>
+              <p className="text-xs text-muted-foreground">{g.lang === 'es' ? 'Asistente cultural del Perú' : 'Cultural assistant of Peru'}</p>
             </div>
           </div>
           <div className="ml-auto flex items-center gap-3">
-            <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="text-xs font-bold rounded-full border px-2 py-1">
-              {lang === 'es' ? 'ES / EN' : 'EN / ES'}
+            <button onClick={() => g.setLang(g.lang === 'es' ? 'en' : 'es')} className="text-xs font-bold rounded-full border px-2 py-1">
+              {g.lang === 'es' ? 'ES / EN' : 'EN / ES'}
             </button>
             <div className="flex items-center gap-1">
               <span className="size-2 rounded-full bg-success animate-pulse" />
-              <span className="text-xs text-muted-foreground">{lang === 'es' ? 'En línea' : 'Online'}</span>
+              <span className="text-xs text-muted-foreground">{g.lang === 'es' ? 'En línea' : 'Online'}</span>
             </div>
           </div>
         </div>
@@ -229,10 +242,10 @@ export function Chat() {
               <div className="mb-4 grid size-16 place-items-center rounded-full bg-primary/10">
                 <Sparkles className="size-8 text-primary" />
               </div>
-              <h2 className="text-lg font-semibold">{lang === 'es' ? '¡Hola! Soy Inti 🇵🇪🦙' : 'Hello! I am Inti 🇵🇪🦙'}</h2>
+              <h2 className="text-lg font-semibold">{g.lang === 'es' ? '¡Hola! Soy Inti 🇵🇪🦙' : 'Hello! I am Inti 🇵🇪🦙'}</h2>
               <p className="mt-2 max-w-md text-sm text-muted-foreground">
-                {lang === 'es' ? 'Tu guía de cultura peruana.' : 'Your guide to Peruvian culture.'}
-                {lang === 'es' ? 'Pregúntame por leyendas, gastronomía, festividades, arte precolombino y tradiciones de los 24 departamentos.' : 'Ask me about legends, gastronomy, festivals, pre-Columbian art and traditions of the 24 departments.'}
+                {g.lang === 'es' ? 'Tu guía de cultura peruana.' : 'Your guide to Peruvian culture.'}
+                {g.lang === 'es' ? 'Pregúntame por leyendas, gastronomía, festividades, arte precolombino y tradiciones de los 24 departamentos.' : 'Ask me about legends, gastronomy, festivals, pre-Columbian art and traditions of the 24 departments.'}
               </p>
 
               {/* Suggestions */}

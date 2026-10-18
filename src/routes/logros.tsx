@@ -22,6 +22,7 @@ export const Route = createFileRoute("/logros")({
 function Logros() {
   const g = useGame();
   const [newlyUnlocked, setNewlyUnlocked] = useState<string[]>([]);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const currentIds = useMemo(() => ACHIEVEMENTS.filter(a => a.test(g)).map(a => a.id), [g]);
   const got = currentIds.length;
 
@@ -57,10 +58,26 @@ function Logros() {
       </div>
       <div className="mt-8 flex flex-wrap gap-3">
         <button onClick={() => exportEvidence(g)} className="btn-3d px-5 py-3">⬇ {t(g.lang, "export")}</button>
-        <button onClick={() => confirm(g.lang === "es" ? "¿Seguro? Se borra tu progreso." : "Sure? Your progress will be erased.") && g.reset()} className="rounded-2xl border-2 border-border px-5 py-3 font-semibold text-destructive">
+        <button onClick={() => setShowResetConfirm(true)} className="rounded-2xl border-2 border-border px-5 py-3 font-semibold text-destructive">
           {t(g.lang, "reset")}
         </button>
       </div>
+      {showResetConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md rounded-3xl bg-card p-6 shadow-2xl">
+            <h3 className="text-xl font-bold">{g.lang === "es" ? "Reiniciar progreso" : "Reset progress"}</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {g.lang === "es"
+                ? "Se borrarán XP, gemas, racha, progreso por departamento, logros y log de actividades. Esta acción no se puede deshacer."
+                : "XP, gems, streak, department progress, achievements and activity log will be deleted. This action cannot be undone."}
+            </p>
+            <div className="mt-6 flex justify-end gap-3">
+              <button onClick={() => setShowResetConfirm(false)} className="rounded-2xl border-2 border-border px-4 py-2 font-semibold">{g.lang === "es" ? "Cancelar" : "Cancel"}</button>
+              <button onClick={() => { g.reset(); setShowResetConfirm(false); }} className="rounded-2xl bg-destructive px-4 py-2 font-semibold text-destructive-foreground">{g.lang === "es" ? "Reiniciar" : "Reset"}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
