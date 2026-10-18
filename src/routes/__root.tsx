@@ -98,24 +98,50 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function BottomNav() {
   return (
-    <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex w-[calc(100%-2rem)] items-center justify-between rounded-3xl bg-white/95 px-3 py-2.5 shadow-2xl border border-border/60 backdrop-blur-md">
-      <Link to="/" className="flex flex-col items-center gap-0.5 text-xs font-bold text-primary">
+    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex w-[calc(100%-2rem)] max-w-md items-center justify-around rounded-full bg-white/95 px-6 py-3 shadow-2xl border border-border/60 backdrop-blur-md transition-all">
+      <Link 
+        to="/" 
+        activeProps={{ className: "text-primary scale-110" }}
+        inactiveProps={{ className: "text-muted-foreground hover:text-primary" }}
+        className="flex flex-col items-center gap-1 text-xs font-bold transition-all"
+      >
         <span className="text-2xl">🗺️</span>
         <span>Inicio</span>
       </Link>
-      <Link to="/" hash="camino" className="flex flex-col items-center gap-0.5 text-xs font-semibold text-muted-foreground hover:text-primary">
+      <Link 
+        to="/" 
+        hash="camino" 
+        activeProps={{ className: "text-primary scale-110" }}
+        inactiveProps={{ className: "text-muted-foreground hover:text-primary" }}
+        className="flex flex-col items-center gap-1 text-xs font-bold transition-all"
+      >
         <span className="text-2xl">📍</span>
         <span>Explorar</span>
       </Link>
-      <Link to="/logros" className="flex flex-col items-center gap-0.5 text-xs font-semibold text-muted-foreground hover:text-primary">
+      <Link 
+        to="/logros" 
+        activeProps={{ className: "text-primary scale-110" }}
+        inactiveProps={{ className: "text-muted-foreground hover:text-primary" }}
+        className="flex flex-col items-center gap-1 text-xs font-bold transition-all"
+      >
         <span className="text-2xl">🏆</span>
         <span>Clasif.</span>
       </Link>
-      <Link to="/asistente" className="flex flex-col items-center gap-0.5 text-xs font-semibold text-muted-foreground hover:text-primary">
+      <Link 
+        to="/asistente" 
+        activeProps={{ className: "text-primary scale-110" }}
+        inactiveProps={{ className: "text-muted-foreground hover:text-primary" }}
+        className="flex flex-col items-center gap-1 text-xs font-bold transition-all"
+      >
         <span className="text-2xl">💬</span>
         <span>Chat</span>
       </Link>
-      <Link to="/perfil" className="flex flex-col items-center gap-0.5 text-xs font-semibold text-muted-foreground hover:text-primary">
+      <Link 
+        to="/perfil" 
+        activeProps={{ className: "text-primary scale-110" }}
+        inactiveProps={{ className: "text-muted-foreground hover:text-primary" }}
+        className="flex flex-col items-center gap-1 text-xs font-bold transition-all"
+      >
         <span className="text-2xl">👤</span>
         <span>Perfil</span>
       </Link>

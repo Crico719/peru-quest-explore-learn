@@ -96,7 +96,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         ...s, complete, seeFact, crowns, unlocked,
         toggleDark: () => setS((p) => ({ ...p, dark: !p.dark })),
         setLang: (lang) => setS((p) => ({ ...p, lang })),
-        reset: () => setS((p) => ({ ...initial, dark: p.dark, lang: p.lang })),
+        reset: () => setS((p) => ({ ...initial, dark: p.dark, lang: p.lang, profile: p.profile })),
         updateProfile: (name: string, avatar: string) => setS((p) => ({ ...p, profile: { name: name.trim() || p.profile.name, avatar } })),
       }}
     >
