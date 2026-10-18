@@ -196,131 +196,153 @@ export function Chat() {
   };
 
   return (
-    <div className="flex h-[calc(100dvh-14rem)] flex-col">
-      {/* Header */}
-      <div className="flex items-center gap-3 border-b border-border px-4 py-3">
-        <div className="grid size-10 place-items-center rounded-full bg-primary/10">
-          <Bot className="size-5 text-primary" />
-        </div>
-        <div className="flex items-center gap-2">
-          <INtiMascot lang={lang} />
-          <div>
-            <h1 className="font-semibold">Inti — Cultura Perú</h1>
-            <p className="text-xs text-muted-foreground">Asistente cultural del Perú</p>
+    <div className="flex h-[calc(100dvh-14rem)] items-center justify-center p-0 sm:p-4">
+      <div className="flex h-full w-full max-w-3xl flex-col overflow-hidden rounded-none sm:rounded-3xl border border-border bg-card shadow-sm sm:shadow-2xl transition-all">
+        {/* Header */}
+        <div className="flex items-center gap-3 border-b border-border px-4 py-3">
+          <div className="grid size-10 place-items-center rounded-full bg-primary/10">
+            <Bot className="size-5 text-primary" />
           </div>
-        </div>
-        <div className="ml-auto flex items-center gap-1">
-          <span className="size-2 rounded-full bg-success animate-pulse" />
-          <span className="text-xs text-muted-foreground">En línea</span>
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4">
-        {messages.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center text-center">
-            <div className="mb-4 grid size-16 place-items-center rounded-full bg-primary/10">
-              <Sparkles className="size-8 text-primary" />
-            </div>
-            <h2 className="text-lg font-semibold">¡Hola! Soy Inti 🇵🇪🦙</h2>
-            <p className="mt-2 max-w-md text-sm text-muted-foreground">
-              Tu guía de cultura peruana.
-              Pregúntame por leyendas, gastronomía, festividades, arte precolombino y tradiciones de los 24 departamentos.
-            </p>
-
-            {/* Suggestions */}
-            <div className="mt-8 grid w-full max-w-lg gap-3 sm:grid-cols-2">
-              {suggestions.map((s) => (
-                <button
-                  key={s.label}
-                  onClick={() => handleSuggestionClick(s.prompt)}
-                  className="press flex items-center gap-3 rounded-[16px] border border-border bg-card p-4 text-left transition-colors hover:bg-muted"
-                >
-                  <s.icon className="size-5 shrink-0 text-primary" />
-                  <span className="text-sm font-medium">{s.label}</span>
-                </button>
-              ))}
+          <div className="flex items-center gap-2">
+            <INtiMascot lang={lang} />
+            <div>
+              <h1 className="font-semibold">Inti — Cultura Perú</h1>
+              <p className="text-xs text-muted-foreground">Asistente cultural del Perú</p>
             </div>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={cn(
-                  "flex gap-3",
-                  message.role === "user" ? "justify-end" : "justify-start"
-                )}
-              >
-                {message.role === "assistant" && (
-                  <div className="grid size-8 shrink-0 place-items-center rounded-full bg-primary/10">
-                    <Bot className="size-4 text-primary" />
-                  </div>
-                )}
+          <div className="ml-auto flex items-center gap-1">
+            <span className="size-2 rounded-full bg-success animate-pulse" />
+            <span className="text-xs text-muted-foreground">En línea</span>
+          </div>
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto px-4 py-4">
+          {messages.length === 0 ? (
+            <div className="flex h-full flex-col items-center justify-center text-center">
+              <div className="mb-4 grid size-16 place-items-center rounded-full bg-primary/10">
+                <Sparkles className="size-8 text-primary" />
+              </div>
+              <h2 className="text-lg font-semibold">¡Hola! Soy Inti 🇵🇪🦙</h2>
+              <p className="mt-2 max-w-md text-sm text-muted-foreground">
+                Tu guía de cultura peruana.
+                Pregúntame por leyendas, gastronomía, festividades, arte precolombino y tradiciones de los 24 departamentos.
+              </p>
+
+              {/* Suggestions */}
+              <div className="mt-8 grid w-full max-w-lg gap-3 sm:grid-cols-2">
+                {suggestions.map((s) => (
+                  <button
+                    key={s.label}
+                    onClick={() => handleSuggestionClick(s.prompt)}
+                    className="press flex items-center gap-3 rounded-[16px] border border-border bg-card p-4 text-left transition-colors hover:bg-muted"
+                  >
+                    <s.icon className="size-5 shrink-0 text-primary" />
+                    <span className="text-sm font-medium">{s.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {messages.map((message) => (
                 <div
+                  key={message.id}
                   className={cn(
-                    "max-w-[80%] rounded-[16px] px-4 py-3",
-                    message.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-card border border-border"
+                    "flex gap-3",
+                    message.role === "user" ? "justify-end" : "justify-start"
                   )}
                 >
-                  <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
-                    {message.content}
-                  </div>
-                  <p
+                  {message.role === "assistant" && (
+                    <div className="grid size-8 shrink-0 place-items-center rounded-full bg-primary/10">
+                      <Bot className="size-4 text-primary" />
+                    </div>
+                  )}
+                  <div
                     className={cn(
-                      "mt-2 text-xs opacity-70",
-                      message.role === "user" ? "text-primary-foreground" : "text-muted-foreground"
+                      "max-w-[80%] rounded-[16px] px-4 py-3",
+                      message.role === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-card border border-border"
                     )}
                   >
-                    {message.timestamp.toLocaleTimeString("es-PE", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
+                    <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
+                      {message.content}
+                    </div>
+                    <p
+                      className={cn(
+                        "mt-2 text-xs opacity-70",
+                        message.role === "user" ? "text-primary-foreground" : "text-muted-foreground"
+                      )}
+                    >
+                      {message.timestamp.toLocaleTimeString("es-PE", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
+                  {message.role === "user" && (
+                    <div className="grid size-8 shrink-0 place-items-center rounded-full bg-muted">
+                      <User className="size-4" />
+                    </div>
+                  )}
                 </div>
-                {message.role === "user" && (
-                  <div className="grid size-8 shrink-0 place-items-center rounded-full bg-muted">
-                    <User className="size-4" />
+                {isTyping && (
+                  <div className="flex gap-3">
+                    <div className="grid size-8 shrink-0 place-items-center rounded-full bg-primary/10">
+                      <Bot className="size-4 text-primary" />
+                    </div>
+                    <div className="rounded-[16px] border border-border bg-card px-4 py-3">
+                      <div className="flex gap-1">
+                        <span className="size-2 animate-bounce rounded-full bg-muted-foreground/50 [animation-delay:-0.3s]" />
+                        <span className="size-2 animate-bounce rounded-full bg-muted-foreground/50 [animation-delay:-0.15s]" />
+                        <span className="size-2 animate-bounce rounded-full bg-muted-foreground/50" />
+                      </div>
+                    </div>
                   </div>
                 )}
-              </div>
-            ))}
-            {isTyping && (
-              <div className="flex gap-3">
-                <div className="grid size-8 shrink-0 place-items-center rounded-full bg-primary/10">
-                  <Bot className="size-4 text-primary" />
-                </div>
-                <div className="rounded-[16px] border border-border bg-card px-4 py-3">
-                  <div className="flex gap-1">
-                    <span className="size-2 animate-bounce rounded-full bg-muted-foreground/50 [animation-delay:-0.3s]" />
-                    <span className="size-2 animate-bounce rounded-full bg-muted-foreground/50 [animation-delay:-0.15s]" />
-                    <span className="size-2 animate-bounce rounded-full bg-muted-foreground/50" />
-                  </div>
-                </div>
+                <div ref={messagesEndRef} />
               </div>
             )}
-            <div ref={messagesEndRef} />
           </div>
-        )}
-      </div>
 
-      {/* Input */}
-      <form
-        onSubmit={handleSubmit}
-        className="border-t border-border bg-card px-4 py-3"
-      >
-        <div className="flex items-end gap-2">
-          <textarea
-            ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSubmit(e);
-              }
+          {/* Input */}
+          <form
+            onSubmit={handleSubmit}
+            className="border-t border-border bg-card px-4 py-3"
+          >
+            <div className="flex items-end gap-2">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit(e);
+                  }
+                }}
+                placeholder="Escribe tu pregunta..."
+                rows={1}
+                className="min-h-11 flex-1 resize-none rounded-[16px] border border-border bg-background px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/50"
+              />
+              <button
+                type="submit"
+                disabled={!input.trim() || isTyping}
+                className="press grid size-11 place-items-center rounded-[16px] bg-primary text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                <Send className="size-5" />
+              </button>
+            </div>
+            <p className="mt-2 text-center text-xs text-muted-foreground">
+              Presiona Enter para enviar · Shift+Enter para nueva línea
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
             }}
             placeholder="Escribe tu pregunta..."
             rows={1}
