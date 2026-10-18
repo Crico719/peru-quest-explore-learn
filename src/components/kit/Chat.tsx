@@ -287,7 +287,8 @@ export function Chat() {
                     </div>
                   )}
                 </div>
-                {isTyping && (
+              ))}
+              {isTyping && (
                   <div className="flex gap-3">
                     <div className="grid size-8 shrink-0 place-items-center rounded-full bg-primary/10">
                       <Bot className="size-4 text-primary" />
