@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ACHIEVEMENTS, useGame, exportEvidence } from "@/lib/game";
 import { t } from "@/lib/i18n";
+import { useEffect, useMemo, useState } from "react";
+
+const UNLOCK_KEY = "peru-quest-achievements-unlocked";
 
 export const Route = createFileRoute("/logros")({
   head: () => ({
@@ -18,17 +21,34 @@ export const Route = createFileRoute("/logros")({
 
 function Logros() {
   const g = useGame();
-  const got = ACHIEVEMENTS.filter((a) => a.test(g));
+  const [newlyUnlocked, setNewlyUnlocked] = useState<string[]>([]);
+  const currentIds = useMemo(() => ACHIEVEMENTS.filter(a => a.test(g)).map(a => a.id), [g]);
+  const got = currentIds.length;
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = localStorage.getItem(UNLOCK_KEY);
+      const prev = raw ? JSON.parse(raw) : [];
+      const justNow = currentIds.filter(id => !prev.includes(id));
+      if (justNow.length > 0) {
+        setNewlyUnlocked(justNow);
+        localStorage.setItem(UNLOCK_KEY, JSON.stringify(currentIds));
+      }
+    } catch {}
+  }, [currentIds]);
+
   return (
     <main className="mx-auto max-w-3xl px-4 pb-24 pt-6">
       <h1 className="text-3xl font-bold">🏆 {t(g.lang, "achievements")}</h1>
-      <p className="text-muted-foreground">{got.length}/{ACHIEVEMENTS.length} {t(g.lang, "unlockedOf")}</p>
+      <p className="text-muted-foreground">{got}/{ACHIEVEMENTS.length} {t(g.lang, "unlockedOf")}</p>
       <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
         {ACHIEVEMENTS.map((a) => {
           const ok = a.test(g);
+          const isNew = ok && newlyUnlocked.includes(a.id);
           return (
-            <div key={a.id} className={`card-3d p-4 text-center ${ok ? "" : "opacity-50 grayscale"}`}>
-              <p className="text-4xl">{a.icon}</p>
+            <div key={a.id} className={`card-3d p-4 text-center ${ok ? "" : "opacity-50 grayscale"} ${isNew ? "achievement-new" : ""}`}>
+              <p className={`text-4xl ${isNew ? "achievement-icon" : ""}`}>{a.icon}</p>
               <p className="mt-1 font-bold">{g.lang === "es" ? a.es : a.en}</p>
               <p className="text-xs text-muted-foreground">{g.lang === "es" ? a.des : a.den}</p>
             </div>
