@@ -41,14 +41,19 @@ function Logros() {
 
   return (
     <main className="mx-auto max-w-3xl px-4 pb-24 pt-6">
-      <h1 className="text-3xl font-bold">🏆 {t(g.lang, "achievements")}</h1>
-      <p className="text-muted-foreground">{got}/{ACHIEVEMENTS.length} {t(g.lang, "unlockedOf")}</p>
+      <div className="rounded-3xl border bg-card p-6">
+        <h1 className="text-3xl font-bold">🏆 {t(g.lang, "achievements")}</h1>
+        <p className="text-muted-foreground">{got}/{ACHIEVEMENTS.length} desbloqueados</p>
+        <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
+          <div className="h-full rounded-full bg-gradient-to-r from-amber-400 to-yellow-500 transition-all" style={{ width: `${Math.round((got/ACHIEVEMENTS.length)*100)}%` }} />
+        </div>
+      </div>
       <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
         {ACHIEVEMENTS.map((a) => {
           const ok = a.test(g);
           const isNew = ok && newlyUnlocked.includes(a.id);
           return (
-            <div key={a.id} className={`card-3d p-4 text-center ${ok ? "" : "opacity-50 grayscale"} ${isNew ? "achievement-new" : ""}`}>
+            <div key={a.id} className={`card-3d p-4 text-center rounded-2xl border transition-transform hover:scale-[1.02] ${ok ? "" : "opacity-50 grayscale"} ${isNew ? "achievement-new" : ""}`}>
               <p className={`text-4xl ${isNew ? "achievement-icon" : ""}`}>{a.icon}</p>
               <p className="mt-1 font-bold">{g.lang === "es" ? a.es : a.en}</p>
               <p className="text-xs text-muted-foreground">{g.lang === "es" ? a.des : a.den}</p>

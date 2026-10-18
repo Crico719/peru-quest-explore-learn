@@ -94,7 +94,7 @@ function Index() {
 
     return (
       <div key={d.id} style={{ transform: `translateX(${offset}px)` }} className="flex flex-col items-center gap-2">
-        <Link to="/departamento/$id" params={{ id: d.id }} aria-label={d.name} className="relative group cursor-pointer">
+        <Link to="/departamento/$id" params={{ id: d.id }} aria-label={d.name} className="relative group cursor-pointer transition-transform duration-200 hover:scale-105">
           <div className="relative">
             {/* Círculo progresivo (aro como Duolingo) */}
             <svg className="w-28 h-28" viewBox="0 0 44 44">
@@ -106,14 +106,15 @@ function Index() {
             {/* Emoji encima del anillo */}
             <div className="absolute inset-0 flex items-center justify-center">
               {img
-                ? <img src={img} alt={d.name} className="h-20 w-20 rounded-full object-cover" />
+                ? <img src={img} alt={d.name} className="h-20 w-20 rounded-full object-cover ring-2 ring-offset-2 ring-primary/20" />
                 : <span className="text-[36px] filter drop-shadow-md">{d.emoji}</span>}
               {isCurrent && <span className="absolute -top-1 -right-1 text-2xl animate-pulse">🔥</span>}
+              {done && <span className="absolute -bottom-1 -right-1 text-xl">🏆</span>}
             </div>
           </div>
-          <span className="mt-2 text-sm font-bold">{d.name}</span>
+          <span className="mt-2 text-sm font-bold group-hover:text-primary transition-colors">{d.name}</span>
           <div className="mt-1 w-16 h-2 overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-600" style={{ width: `${pctDept}%` }} />
+            <div className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-600 transition-all" style={{ width: `${pctDept}%` }} />
           </div>
           <span className="text-[10px] font-bold">{pctDept}%</span>
         </Link>
