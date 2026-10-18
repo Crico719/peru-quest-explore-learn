@@ -154,12 +154,6 @@ function Index() {
             </div>
             <p className="mt-2 text-lg font-medium">{t(g.lang, "tagline")}</p>
             <p className="mt-2 text-sm font-semibold">🦉 {t(g.lang, "tip")}: {tip}</p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <span className="text-[14px] font-semibold">👑 {totalCrowns} / {maxCrowns}</span>
-              <span className="flex items-center gap-1 text-[14px] font-semibold">🔥 {g.streak}</span>
-              <span className="flex items-center gap-1 text-sm font-semibold text-gold">💎 {g.gems}</span>
-              <span className="flex items-center gap-1 text-sm font-bold text-gold">⚡ {g.xp}</span>
-            </div>
           </div>
           <dl className="grid grid-cols-2 gap-2 text-sm">
             {info.map(([k, v]) => (
@@ -169,6 +163,28 @@ function Index() {
               </div>
             ))}
           </dl>
+        </div>
+      </section>
+
+      {/* Bienvenida y progreso */}
+      <section className="mx-auto mt-6 max-w-5xl px-4">
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="rounded-3xl border bg-card p-5">
+            <h3 className="text-sm font-bold uppercase text-muted-foreground">Progreso</h3>
+            <p className="mt-2 text-2xl font-bold">👑 {totalCrowns} / {maxCrowns} coronas</p>
+            <Progress value={pct} className="mt-3 h-3" />
+            <p className="mt-2 text-xs text-muted-foreground">{pct}% completado</p>
+          </div>
+          <div className="rounded-3xl border bg-card p-5 md:col-span-2">
+            <p className="text-sm font-semibold text-muted-foreground">¡Hola!</p>
+            <h3 className="text-xl font-bold">Continúa tu aventura</h3>
+            <p className="mt-1 text-sm text-muted-foreground">{t(g.lang, "tagline")}</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <span className="flex items-center gap-1 text-sm font-semibold">🔥 {g.streak} racha</span>
+              <span className="flex items-center gap-1 text-sm font-semibold text-gold">💎 {g.gems} gemas</span>
+              <span className="flex items-center gap-1 text-sm font-bold text-gold">⚡ {g.xp} XP</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -195,7 +211,7 @@ function Index() {
             const pctR = Math.round((crowns / max) * 100);
             const started = crowns > 0;
             return (
-              <div key={r} className="flex items-center gap-4 rounded-3xl border-2 border-border bg-card p-5 sm:p-6">
+              <div key={r} className="flex items-center gap-4 rounded-3xl border-2 border-border bg-card p-5 sm:p-6 hover:shadow-lg transition-shadow">
                 <div className="flex-1">
                   <p className="text-xs font-bold uppercase tracking-wide text-primary">{depts.length} departamentos</p>
                   <h3 className="mt-1 text-2xl font-bold">{emoji} {label}</h3>
@@ -204,12 +220,12 @@ function Index() {
                     <div className="h-4 flex-1 overflow-hidden rounded-full bg-muted">
                       <div className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-600 transition-all" style={{ width: `${pctR}%` }} />
                     </div>
-                    <span className="text-xs font-bold text-muted-foreground">{pctR}%</span>
-                    <span className="text-xl">🏆</span>
+                    <span className="text-xs font-bold">{pctR}%</span>
+                    <span className="text-sm font-semibold">👑 {crowns}/{max}</span>
                   </div>
                   <button
                     onClick={() => setRegion(r)}
-                    className="btn-3d mt-4 w-full py-3 text-center sm:w-56"
+                    className="btn-3d mt-4 w-full rounded-2xl py-3 text-center font-bold sm:w-56"
                   >
                     {started ? "CONTINUAR" : t(g.lang, "start2").toUpperCase()}
                   </button>
