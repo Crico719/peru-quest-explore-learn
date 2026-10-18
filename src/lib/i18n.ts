@@ -14,7 +14,7 @@ const T = {
     search: "Buscar departamento…", all: "Todos", coast: "Costa", highlands: "Sierra", jungle: "Selva", progress: "Progreso de coronas", tip: "Tip del día", moves: "movidas", showRecipe: "Ver receta para aprender", hideRecipe: "Ocultar receta", dishesOf: "Platos de este departamento",
   },
   en: {
-    tagline: "Learn Peru's 25 departments by playing", start: "Start the path!", capital: "Capital", population: "Population",
+    tagline: "Learn Peru's 24 departments by playing", start: "Start the path!", capital: "Capital", population: "Population",
     area: "Area", languages: "Languages", currency: "Currency", independence: "Independence", regions: "Regions",
     path: "Your path", locked: "Finish the previous one to unlock", achievements: "Achievements", export: "Export evidence",
     history: "History", places: "Top places", food: "Food", fiestas: "Festivals", person: "Famous figure", facts: "6 fun facts",
