@@ -312,7 +312,7 @@ function Index() {
           )}
         </div>
       ) : (
-        region !== null && (
+        region === null && (
         <div className="relative mx-auto mt-6 flex max-w-md flex-col items-center gap-6">
           <button onClick={() => setRegion(null)} className="self-start text-sm font-bold text-muted-foreground hover:text-foreground">
             ← {t(g.lang, "back")}
