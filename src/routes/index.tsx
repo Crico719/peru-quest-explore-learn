@@ -41,7 +41,7 @@ function Index() {
   const g = useGame();
   const { data: hero } = useWikiImage("Machu_Picchu");
   const [q, setQ] = useState("");
-  const [region, setRegion] = useState<"Costa" | "Sierra" | "Selva">("Costa");
+  const [region, setRegion] = useState<"Costa" | "Sierra" | "Selva" | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [deptImages, setDeptImages] = useState<Record<string, string>>({});
 
