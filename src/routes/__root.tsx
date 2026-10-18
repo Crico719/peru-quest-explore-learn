@@ -99,42 +99,40 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 function BottomNav() {
+  const linkClass =
+    "flex flex-col items-center gap-0.5 rounded-2xl px-3 py-1.5 text-[11px] font-bold transition-all sm:text-xs";
   return (
-    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex w-[calc(100%-2rem)] max-w-md items-center justify-around rounded-full bg-white/95 px-6 py-3 shadow-2xl border border-border/60 backdrop-blur-md transition-all">
+    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex w-[calc(100%-2rem)] max-w-md items-center justify-around rounded-full bg-white/95 px-4 py-2 shadow-2xl border border-border/60 backdrop-blur-md transition-all dark:bg-card/95">
       <Link 
         to="/" 
-        activeProps={{ className: "text-primary scale-110" }}
-        inactiveProps={{ className: "text-muted-foreground hover:text-primary" }}
-        className="flex flex-col items-center gap-1 text-xs font-bold transition-all"
+        activeProps={{ className: `${linkClass} bg-primary/15 text-primary scale-105` }}
+        inactiveProps={{ className: `${linkClass} text-muted-foreground hover:text-primary hover:bg-muted/60` }}
       >
-        <span className="text-2xl">🗺️</span>
+        <span className="text-2xl" aria-hidden="true">🗺️</span>
         <span>Inicio</span>
       </Link>
       <Link 
         to="/logros" 
-        activeProps={{ className: "text-primary scale-110" }}
-        inactiveProps={{ className: "text-muted-foreground hover:text-primary" }}
-        className="flex flex-col items-center gap-1 text-xs font-bold transition-all"
+        activeProps={{ className: `${linkClass} bg-primary/15 text-primary scale-105` }}
+        inactiveProps={{ className: `${linkClass} text-muted-foreground hover:text-primary hover:bg-muted/60` }}
       >
-        <span className="text-2xl">🏆</span>
+        <span className="text-2xl" aria-hidden="true">🏆</span>
         <span>Clasif.</span>
       </Link>
       <Link 
         to="/asistente" 
-        activeProps={{ className: "text-primary scale-110" }}
-        inactiveProps={{ className: "text-muted-foreground hover:text-primary" }}
-        className="flex flex-col items-center gap-1 text-xs font-bold transition-all"
+        activeProps={{ className: `${linkClass} bg-primary/15 text-primary scale-105` }}
+        inactiveProps={{ className: `${linkClass} text-muted-foreground hover:text-primary hover:bg-muted/60` }}
       >
-        <span className="text-2xl">💬</span>
+        <span className="text-2xl" aria-hidden="true">💬</span>
         <span>Chat</span>
       </Link>
       <Link 
         to="/perfil" 
-        activeProps={{ className: "text-primary scale-110" }}
-        inactiveProps={{ className: "text-muted-foreground hover:text-primary" }}
-        className="flex flex-col items-center gap-1 text-xs font-bold transition-all"
+        activeProps={{ className: `${linkClass} bg-primary/15 text-primary scale-105` }}
+        inactiveProps={{ className: `${linkClass} text-muted-foreground hover:text-primary hover:bg-muted/60` }}
       >
-        <span className="text-2xl">👤</span>
+        <span className="text-2xl" aria-hidden="true">👤</span>
         <span>Perfil</span>
       </Link>
     </nav>

@@ -11,6 +11,7 @@ type IntiMascotProps = {
   size?: number;
   className?: string;
   alt?: string;
+  float?: boolean;
 };
 
 const images: Record<IntiExpression, string> = {
@@ -25,6 +26,7 @@ export function IntiMascot({
   size = 48,
   className,
   alt = "Inti mascota",
+  float = false,
 }: IntiMascotProps) {
   const src = images[expression];
 
@@ -36,6 +38,7 @@ export function IntiMascot({
       height={size}
       className={cn(
         "block select-none will-change-transform transition-transform duration-300 ease-out hover:scale-[1.03] motion-safe:hover:scale-[1.03]",
+        float && "motion-safe:inti-float",
         className
       )}
       style={{
