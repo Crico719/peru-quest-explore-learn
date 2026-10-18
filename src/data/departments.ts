@@ -675,28 +675,6 @@ export const DEPARTMENTS: Department[] = [
     steps: ["Cortar el pescado en cubos", "Agregar limón", "Añadir cebolla, ají y sal", "Servir con camote y choclo"],
   },
   {
-    id: "callao", name: "Callao", capital: "Callao", wiki: "Callao", region: "Costa", emoji: "⚓",
-    history: "Principal puerto del Perú desde el virreinato. La Fortaleza del Real Felipe resistió ataques y el combate del 2 de mayo de 1866.",
-    places: ["Fortaleza del Real Felipe", "La Punta", "Isla San Lorenzo"],
-    food: ["Ceviche chalaco", "Choritos a la chalaca", "Sudado de pescado"],
-    fiestas: ["Fiesta de San Pedro y San Pablo", "Aniversario del Combate del 2 de Mayo"],
-    person: { name: "José Gálvez", desc: "Héroe que murió defendiendo el Callao en 1866." },
-    facts: [
-      { t: "Provincia constitucional", d: "Tiene un régimen especial como región." },
-      { t: "Aeropuerto", d: "Aquí está el aeropuerto Jorge Chávez." },
-      { t: "Real Felipe", d: "Fortaleza pentagonal del siglo XVIII." },
-      { t: "Chalacos", d: "Así se llama a la gente del Callao: los chalacos." },
-      { t: "Salsa", d: "Cuna de grandes salseros." },
-      { t: "Islas Palomino", d: "Se puede nadar con lobos marinos." },
-    ],
-    quiz: [
-      { q: "¿Cómo se llama a la gente del Callao?", o: ["Chalacos", "Limeños", "Norteños", "Charapas"], a: 0 },
-      { q: "¿Qué fortaleza está aquí?", o: ["Real Felipe", "Kuélap", "Sacsayhuamán", "Paramonga"], a: 0 },
-      { q: "¿Qué hay en el Callao?", o: ["Aeropuerto principal", "Machu Picchu", "Lago Titicaca", "Huascarán"], a: 0 },
-    ],
-    steps: ["Cocinar los choritos", "Picar cebolla, tomate y choclo", "Agregar limón", "Colocar sobre cada chorito"],
-  },
-  {
     id: "junin", name: "Junín", capital: "Huancayo", wiki: "Departamento_de_Junín", region: "Sierra", emoji: "🎻",
     history: "En la pampa de Junín, el 6 de agosto de 1824, Bolívar ganó la batalla de Junín, paso decisivo a la independencia.",
     places: ["Valle del Mantaro", "Santuario Histórico de Chacamarca", "Selva Central (Chanchamayo)"],

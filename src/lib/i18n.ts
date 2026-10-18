@@ -2,7 +2,7 @@ import type { Lang } from "./game";
 
 const T = {
   es: {
-    tagline: "Aprende los 25 departamentos del Perú jugando", start: "¡Empezar el camino!", capital: "Capital", population: "Población",
+    tagline: "Aprende los 24 departamentos del Perú jugando", start: "¡Empezar el camino!", capital: "Capital", population: "Población",
     area: "Superficie", languages: "Idiomas", currency: "Moneda", independence: "Independencia", regions: "Regiones",
     path: "Tu camino", locked: "Completa el anterior para desbloquear", achievements: "Logros", export: "Exportar evidencia",
     history: "Historia", places: "Lugares top", food: "Gastronomía", fiestas: "Fiestas", person: "Personaje", facts: "6 datos curiosos",

@@ -10,9 +10,10 @@ export type Lang = "es" | "en";
 type State = {
   xp: number; gems: number; streak: number; lastDay: string | null;
   progress: Record<string, DeptProgress>; log: LogEntry[]; dark: boolean; lang: Lang;
+  profile: { name: string; avatar: string };
 };
 
-const initial: State = { xp: 0, gems: 0, streak: 0, lastDay: null, progress: {}, log: [], dark: false, lang: "es" };
+const initial: State = { xp: 0, gems: 0, streak: 0, lastDay: null, progress: {}, log: [], dark: false, lang: "es", profile: { name: "Explorador", avatar: "🦉" } };
 const KEY = "peru-quest-v1";
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -25,6 +26,7 @@ type Ctx = State & {
   toggleDark: () => void;
   setLang: (l: Lang) => void;
   reset: () => void;
+  updateProfile: (name: string, avatar: string) => void;
 };
 
 // Keep a single context instance across hot reloads so the provider and consumers always match.
@@ -95,6 +97,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         toggleDark: () => setS((p) => ({ ...p, dark: !p.dark })),
         setLang: (lang) => setS((p) => ({ ...p, lang })),
         reset: () => setS((p) => ({ ...initial, dark: p.dark, lang: p.lang })),
+        updateProfile: (name: string, avatar: string) => setS((p) => ({ ...p, profile: { name: name.trim() || p.profile.name, avatar } })),
       }}
     >
       {children}
@@ -139,7 +142,7 @@ export const ACHIEVEMENTS = [
   { id: "first", icon: "🥇", es: "Primer paso", en: "First step", des: "Gana tu primera corona", den: "Earn your first crown", test: (s: State) => DEPARTMENTS.some((d) => crownsOf(s.progress[d.id]) > 0) },
   { id: "five", icon: "🗺️", es: "Explorador", en: "Explorer", des: "Corona en 5 departamentos", den: "Crown 5 departments", test: (s: State) => DEPARTMENTS.filter((d) => crownsOf(s.progress[d.id]) > 0).length >= 5 },
   { id: "ten", icon: "🧭", es: "Viajero", en: "Traveler", des: "Corona en 10 departamentos", den: "Crown 10 departments", test: (s: State) => DEPARTMENTS.filter((d) => crownsOf(s.progress[d.id]) > 0).length >= 10 },
-  { id: "all", icon: "🇵🇪", es: "Conoce el Perú", en: "Know Peru", des: "Corona en los 25", den: "Crown all 25", test: (s: State) => DEPARTMENTS.every((d) => crownsOf(s.progress[d.id]) > 0) },
+  { id: "all", icon: "🇵🇪", es: "Conoce el Perú", en: "Know Peru", des: "Corona en los 24", den: "Crown all 24", test: (s: State) => DEPARTMENTS.every((d) => crownsOf(s.progress[d.id]) > 0) },
   { id: "master", icon: "👑", es: "Maestro", en: "Master", des: "4 coronas en un departamento", den: "4 crowns in one department", test: (s: State) => DEPARTMENTS.some((d) => crownsOf(s.progress[d.id]) === 4) },
   { id: "perfect", icon: "💯", es: "Perfecto", en: "Perfect", des: "Quiz sin errores", den: "Flawless quiz", test: (s: State) => s.log.some((l) => l.activity === "quiz" && l.score === l.max) },
   { id: "xp500", icon: "⚡", es: "500 XP", en: "500 XP", des: "Acumula 500 XP", den: "Earn 500 XP", test: (s: State) => s.xp >= 500 },

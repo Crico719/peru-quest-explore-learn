@@ -225,7 +225,7 @@ export function Chat() {
             <h2 className="text-lg font-semibold">¡Hola! Soy Inti 🇵🇪🦙</h2>
             <p className="mt-2 max-w-md text-sm text-muted-foreground">
               Tu guía de cultura peruana.
-              Pregúntame por leyendas, gastronomía, festividades, arte precolombino y tradiciones de los 25 departamentos.
+              Pregúntame por leyendas, gastronomía, festividades, arte precolombino y tradiciones de los 24 departamentos.
             </p>
 
             {/* Suggestions */}

@@ -9,10 +9,10 @@ import { Progress } from "@/components/ui/progress";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "PERÚ QUEST — Aprende los 25 departamentos del Perú" },
+      { title: "PERÚ QUEST — Aprende los 24 departamentos del Perú" },
       { name: "description", content: "Camino tipo Duolingo por los departamentos del Perú: historia, gastronomía, quizzes y minijuegos." },
       { property: "og:title", content: "PERÚ QUEST — Aprende el Perú jugando" },
-      { property: "og:description", content: "Gana XP, gemas y coronas recorriendo los 25 departamentos del Perú." },
+      { property: "og:description", content: "Gana XP, gemas y coronas recorriendo los 24 departamentos del Perú." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

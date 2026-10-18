@@ -64,7 +64,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "PERÚ QUEST" },
-      { name: "description", content: "Aprende los 25 departamentos del Perú jugando." },
+      { name: "description", content: "Aprende los 24 departamentos del Perú jugando." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -115,10 +115,10 @@ function BottomNav() {
         <span className="text-2xl">💬</span>
         <span>Chat</span>
       </Link>
-      <button className="flex flex-col items-center gap-0.5 text-xs font-semibold text-muted-foreground hover:text-primary">
+      <Link to="/perfil" className="flex flex-col items-center gap-0.5 text-xs font-semibold text-muted-foreground hover:text-primary">
         <span className="text-2xl">👤</span>
         <span>Perfil</span>
-      </button>
+      </Link>
     </nav>
   );
 }
