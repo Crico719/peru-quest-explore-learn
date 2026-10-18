@@ -150,8 +150,9 @@ export function Chat() {
         .map(m => ({ role: m.role as 'user' | 'assistant', content: String(m.content) }))
         .filter(h => typeof h.role === 'string' && typeof h.content === 'string');
 
+      const langInstruction = lang === 'en' ? "Respond in English. " : "Responde en español. ";
       const payload = {
-        message: String(userMessage.content),
+        message: langInstruction + String(userMessage.content),
         history
       };
 
@@ -206,13 +207,18 @@ export function Chat() {
           <div className="flex items-center gap-2">
             <INtiMascot lang={lang} />
             <div>
-              <h1 className="font-semibold">Inti — Cultura Perú</h1>
-              <p className="text-xs text-muted-foreground">Asistente cultural del Perú</p>
+              <h1 className="font-semibold">{lang === 'es' ? 'Inti — Cultura Perú' : 'Inti — Peru Culture'}</h1>
+              <p className="text-xs text-muted-foreground">{lang === 'es' ? 'Asistente cultural del Perú' : 'Cultural assistant of Peru'}</p>
             </div>
           </div>
-          <div className="ml-auto flex items-center gap-1">
-            <span className="size-2 rounded-full bg-success animate-pulse" />
-            <span className="text-xs text-muted-foreground">En línea</span>
+          <div className="ml-auto flex items-center gap-3">
+            <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="text-xs font-bold rounded-full border px-2 py-1">
+              {lang === 'es' ? 'ES / EN' : 'EN / ES'}
+            </button>
+            <div className="flex items-center gap-1">
+              <span className="size-2 rounded-full bg-success animate-pulse" />
+              <span className="text-xs text-muted-foreground">{lang === 'es' ? 'En línea' : 'Online'}</span>
+            </div>
           </div>
         </div>
 
@@ -223,10 +229,10 @@ export function Chat() {
               <div className="mb-4 grid size-16 place-items-center rounded-full bg-primary/10">
                 <Sparkles className="size-8 text-primary" />
               </div>
-              <h2 className="text-lg font-semibold">¡Hola! Soy Inti 🇵🇪🦙</h2>
+              <h2 className="text-lg font-semibold">{lang === 'es' ? '¡Hola! Soy Inti 🇵🇪🦙' : 'Hello! I am Inti 🇵🇪🦙'}</h2>
               <p className="mt-2 max-w-md text-sm text-muted-foreground">
-                Tu guía de cultura peruana.
-                Pregúntame por leyendas, gastronomía, festividades, arte precolombino y tradiciones de los 24 departamentos.
+                {lang === 'es' ? 'Tu guía de cultura peruana.' : 'Your guide to Peruvian culture.'}
+                {lang === 'es' ? 'Pregúntame por leyendas, gastronomía, festividades, arte precolombino y tradiciones de los 24 departamentos.' : 'Ask me about legends, gastronomy, festivals, pre-Columbian art and traditions of the 24 departments.'}
               </p>
 
               {/* Suggestions */}
