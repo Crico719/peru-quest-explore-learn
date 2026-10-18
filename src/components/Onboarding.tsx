@@ -94,10 +94,10 @@ export function Onboarding({ onClose }: { onClose: () => void }) {
             <button onClick={skip} className="text-xs font-semibold underline">Saltar tutorial</button>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-3xl">{STEPS[step].icon}</span>
+            <span className="text-3xl">{STEPS[step]?.icon}</span>
             <div>
-              <h3 className="font-bold">{STEPS[step].title}</h3>
-              <p className="text-sm text-muted-foreground">{STEPS[step].text}</p>
+              <h3 className="font-bold">{STEPS[step]?.title}</h3>
+              <p className="text-sm text-muted-foreground">{STEPS[step]?.text}</p>
             </div>
           </div>
         </div>

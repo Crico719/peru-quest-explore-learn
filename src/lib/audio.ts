@@ -31,8 +31,16 @@ const SOUNDS: Record<SoundType, string> = {
 const BGM_URL = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'; // Placeholder for Peruvian ambient music
 
 // Background music instance (singleton)
-let bgm = new Audio(BGM_URL);
-bgm.loop = true;
+let bgmInstance: HTMLAudioElement | null = null;
+const noopAudio = { pause() {}, play: () => Promise.resolve(), volume: 0, currentTime: 0 } as unknown as HTMLAudioElement;
+function getBgm(): HTMLAudioElement {
+  if (typeof window === "undefined" || typeof Audio === "undefined") return noopAudio;
+  if (!bgmInstance) {
+    bgmInstance = new Audio(BGM_URL);
+    bgmInstance.loop = true;
+  }
+  return bgmInstance;
+}
 
 export const useAudioStore = create<AudioState>()(
   persist(
@@ -43,13 +51,13 @@ export const useAudioStore = create<AudioState>()(
       sfxVolume: 0.7,
       setMusicEnabled: (enabled) => {
         set({ musicEnabled: enabled });
-        if (!enabled) bgm.pause();
-        else bgm.play().catch(() => {}); // Handle autoplay restrictions
+        if (!enabled) getBgm().pause();
+        else getBgm().play().catch(() => {}); // Handle autoplay restrictions
       },
       setSfxEnabled: (enabled) => set({ sfxEnabled: enabled }),
       setMusicVolume: (volume) => {
         set({ musicVolume: volume });
-        bgm.volume = volume;
+        getBgm().volume = volume;
       },
       setSfxVolume: (volume) => set({ sfxVolume: volume }),
     }),
@@ -95,19 +103,19 @@ class SoundManager {
     const { musicEnabled, musicVolume } = useAudioStore.getState();
     if (!musicEnabled) return;
 
-    bgm.volume = musicVolume;
-    bgm.play().catch(e => {
+    getBgm().volume = musicVolume;
+    getBgm().play().catch(e => {
       console.warn('Autoplay blocked. Music will start on first user interaction.');
     });
   }
 
   public stopMusic() {
-    bgm.pause();
-    bgm.currentTime = 0;
+    getBgm().pause();
+    getBgm().currentTime = 0;
   }
 
   public updateMusicVolume(volume: number) {
-    bgm.volume = volume;
+    getBgm().volume = volume;
   }
 }
 
