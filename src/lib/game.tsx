@@ -11,9 +11,10 @@ type State = {
   xp: number; gems: number; streak: number; lastDay: string | null;
   progress: Record<string, DeptProgress>; log: LogEntry[]; dark: boolean; lang: Lang;
   profile: { name: string; avatar: string };
+  _v?: number;
 };
 
-const initial: State = { xp: 0, gems: 0, streak: 0, lastDay: null, progress: {}, log: [], dark: false, lang: "es", profile: { name: "Explorador", avatar: "🦉" } };
+const initial: State = { xp: 0, gems: 0, streak: 0, lastDay: null, progress: {}, log: [], dark: false, lang: "es", profile: { name: "Explorador", avatar: "🦉" }, _v: 2 };
 const KEY = "peru-quest-v1";
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -27,6 +28,8 @@ type Ctx = State & {
   setLang: (l: Lang) => void;
   reset: () => void;
   updateProfile: (name: string, avatar: string) => void;
+  level: number;
+  xpToNext: number;
 };
 
 // Keep a single context instance across hot reloads so the provider and consumers always match.
@@ -45,7 +48,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) setS({ ...initial, ...JSON.parse(raw) });
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const migrated: State = { ...initial, ...parsed, _v: 2 };
+        // Basic schema validation
+        if (typeof migrated.xp !== 'number') migrated.xp = 0;
+        if (typeof migrated.gems !== 'number') migrated.gems = 0;
+        if (!migrated.progress || typeof migrated.progress !== 'object') migrated.progress = {};
+        if (!migrated.profile) migrated.profile = initial.profile;
+        setS(migrated);
+      }
     } catch {}
     setLoaded(true);
   }, []);
@@ -89,11 +101,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const crowns = (dept: string) => crownsOf(s.progress[dept]);
   const unlocked = (i: number) => i === 0 || crowns(DEPARTMENTS[i - 1]!.id) >= 1;
+  const level = Math.floor(s.xp / 100) + 1;
+  const xpToNext = Math.max(0, level * 100 - s.xp);
 
   return (
     <GameCtx.Provider
       value={{
-        ...s, complete, seeFact, crowns, unlocked,
+        ...s, complete, seeFact, crowns, unlocked, level, xpToNext,
         toggleDark: () => setS((p) => ({ ...p, dark: !p.dark })),
         setLang: (lang) => setS((p) => ({ ...p, lang })),
         reset: () => setS((p) => ({ ...initial, dark: p.dark, lang: p.lang, profile: p.profile })),

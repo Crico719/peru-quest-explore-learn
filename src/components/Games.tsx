@@ -42,6 +42,7 @@ export function Quiz({ d }: { d: Department }) {
           <button
             key={k}
             disabled={checked}
+            aria-label={`Opción ${["A","B","C","D"][n]}: ${q.o[k]}`}
             onClick={() => setSel(k)}
             className={`card-3d flex items-center gap-3 px-4 py-4 text-left text-base font-semibold transition active:scale-[0.98] ${sel === k ? "border-primary bg-secondary" : ""} ${checked && k === q.a ? "border-success bg-secondary" : ""} ${checked && sel === k && k !== q.a ? "border-destructive" : ""}`}
           >
@@ -53,9 +54,14 @@ export function Quiz({ d }: { d: Department }) {
         ))}
       </div>
       {checked && (
-        <p className={`mt-3 font-semibold ${ok ? "text-primary" : "text-destructive"}`}>
-          {ok ? t(g.lang, "correct") : `${t(g.lang, "wrong")} ${q.o[q.a]}`}
-        </p>
+        <>
+          <p className={`mt-3 font-semibold ${ok ? "text-primary" : "text-destructive"}`}>
+            {ok ? t(g.lang, "correct") : `${t(g.lang, "wrong")} — ${q.o[q.a]}`}
+          </p>
+          {q.e && (
+            <p className="mt-2 rounded-2xl bg-secondary p-3 text-sm text-muted-foreground">{q.e}</p>
+          )}
+        </>
       )}
       <button
         disabled={sel === null}

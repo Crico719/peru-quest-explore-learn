@@ -96,6 +96,16 @@ function Perfil() {
               </div >
             </div >
           </div >
+          {/* Definiciones */}
+          <div className="rounded-2xl border-2 border-border bg-white p-4 text-sm">
+            <p className="font-bold mb-2">¿Cómo funciona?</p>
+            <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+              <li><span className="font-semibold text-foreground">XP</span>: experiencia por completar actividades. Cada 100 XP subes de nivel.</li>
+              <li><span className="font-semibold text-foreground">Gemas</span>: recompensa por primera vez y respuestas perfectas. Úsalas para personalizar logros.</li>
+              <li><span className="font-semibold text-foreground">Coronas</span>: 4 por departamento al completar quiz, memoria, tap y orden. Una corona desbloquea el siguiente departamento.</li>
+              <li><span className="font-semibold text-foreground">Racha</span>: días consecutivos jugando. Se calcula con fecha UTC.</li>
+            </ul>
+          </div>
 
           {/* Friend Suggestions */}
           <div className="space-y-4">

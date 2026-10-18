@@ -1,5 +1,5 @@
 export type Fact = { t: string; d: string };
-export type Q = { q: string; o: string[]; a: number };
+export type Q = { q: string; o: string[]; a: number; e?: string };
 export type Department = {
   id: string;
   name: string;
