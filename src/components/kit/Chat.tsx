@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, Bot, User, Sparkles, BookOpen, Brain, Calculator } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { chatServerFn } from "@/server/chat.server";
 
 const INTI_TASKS = {
   es: [
@@ -213,11 +214,15 @@ export function Chat() {
     setIsTyping(true);
 
     try {
-      const response = await simulateAI(userMessage.content, messages);
+      const allMessages = [...messages, userMessage];
+      const result = await chatServerFn({ messages: allMessages, lang });
+      if (!result.ok) {
+        throw new Error(result.error);
+      }
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: response,
+        content: result.content,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
