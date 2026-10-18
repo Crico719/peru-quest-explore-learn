@@ -224,8 +224,12 @@ function Index() {
         <div className="mx-auto mt-6 grid max-w-2xl grid-cols-2 gap-3 sm:grid-cols-3">
           {visible.map(({ d }) => (
             <div key={d.id} className="flex flex-col items-center rounded-2xl bg-card p-3">
-              <Link to="/departamento/$id" params={{ id: d.id }} className="text-4xl" aria-label={d.name}>
-                {d.emoji}
+              <Link to="/departamento/$id" params={{ id: d.id }} aria-label={d.name} className="block">
+                {deptImages[d.id] ? (
+                  <img src={deptImages[d.id]} alt={d.name} className="h-20 w-20 rounded-full object-cover" />
+                ) : (
+                  <span className="text-4xl">{d.emoji}</span>
+                )}
               </Link>
               <span className="mt-1 text-sm font-semibold">{d.name}</span>
               <span className="text-xs text-muted-foreground">{REGION_EMOJI[d.region]} {d.region}</span>
