@@ -8,13 +8,14 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { GameProvider } from "@/lib/game";
 import { TopBar } from "@/components/TopBar";
 import { PwaRegistrar } from "@/components/PwaRegistrar";
+import { Onboarding } from "@/components/Onboarding";
 
 function NotFoundComponent() {
   return (
@@ -141,6 +142,15 @@ function BottomNav() {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    const done = localStorage.getItem("peru-quest-onboarding-done");
+    const skipped = localStorage.getItem("peru-quest-onboarding-skipped");
+    if (!done && !skipped) {
+      setShowOnboarding(true);
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -149,6 +159,7 @@ function RootComponent() {
         <PwaRegistrar />
         <Outlet />
         <BottomNav />
+        {showOnboarding && <Onboarding onClose={() => setShowOnboarding(false)} />}
       </GameProvider>
     </QueryClientProvider>
   );
