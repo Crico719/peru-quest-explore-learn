@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, Bot, User, Sparkles, BookOpen, Brain, Calculator } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { chatServerFn } from "@/server/chat.server";
 
 const INTI_TASKS = {
   es: [
@@ -114,73 +113,6 @@ Temas que cubres:
 5. Leyendas y mitos: del Huascarán, la Puma, el Dorado
 6. Patrimonio natural y cultural del Perú`;
 
-// Simulación de IA local (reemplazar con Ollama en producción)
-async function simulateAI(userMessage: string, history: Message[]): Promise<string> {
-  await new Promise((resolve) => setTimeout(resolve, 800 + Math.random() * 700));
-  const lowerMessage = userMessage.toLowerCase();
-
-  if (lowerMessage.includes("leyenda") || lowerMessage.includes("dorado") || lowerMessage.includes("huascarán")) {
-    return `## Leyendas del Perú 🇵🇪✨
-
-**Leyenda del Huascarán**
-El Huascarán es la montaña más alta del Perú. Según la leyenda, es el corazón de un joven pastor que amó a una princesa Chachapoya y se convirtió en piedra para seguir vigilando su pueblo.
-
-**El Dorado**
-En la Amazonía se cuenta que El Dorado era un hombre cubierto de oro que se bañaba en las lagunas. Símbolo de la riqueza natural y la imaginación andino-amazónica.
-
-¿Quieres que te cuente la leyenda de la Puma o de Manco Cápac?`;
-  }
-
-  if (lowerMessage.includes("gastronomía") || lowerMessage.includes("plato") || lowerMessage.includes("comida")) {
-    return `## Gastronomía regional del Perú 🍲
-
-**Costa:** Ceviche, tiradito, arroz con mariscos
-**Sierra:** Papa a la huancaína, cuy chactado, queso fresco
-**Selva:** Juane, tacacho con cecina, ensalada de plátano
-
-Ingredientes nativos: quinua, kiwicha, camote, ají amarillo, maíz morado.
-
-¿De qué departamento quieres un plato típico?`;
-  }
-
-  if (lowerMessage.includes("inti raymi") || lowerMessage.includes("festividad") || lowerMessage.includes("fiesta")) {
-    return `## Festividades andinas 🎉
-
-**Inti Raymi** — 24 de junio en Cusco
-Fiesta del Sol en honor a Inti. Procesión, ofrendas y danzas. Celebra el solsticio de invierno y agradece la cosecha.
-
-Otras festividades:
-- Fiesta de la Candelaria en Puno — música y danza
-- Señor de los Milagros en Lima
-- Virgen de la Candelaria y Qoyllur Rit'i
-
-¿Quieres detalles de una región específica?`;
-  }
-
-  if (lowerMessage.includes("arte") || lowerMessage.includes("moche") || lowerMessage.includes("nazca") || lowerMessage.includes("cerámica")) {
-    return `## Arte precolombino peruano 🎨
-
-**Moche:** Cerámica de retrato con cabezas clínicas, escenas cotidianas y mythológicas. Famosa por su técnica de pulido y colores vivos.
-
-**Nazca:** Líneas en el desierto y cerámica con personajes antropomorfos. Representan deidades y animales andinos.
-
-**Inca:** Textiles de lana de alpaca, orfebrería en oro y plata, piedra tallada en Machu Picchu.
-
-¿Te interesa un detalle sobre textiles andinos?`;
-  }
-
-  return `¡Hola! Soy **Inti**, tu asistente de cultura peruana 🇵🇪🦙
-
-Puedo contarte sobre:
-📜 Leyendas y mitos andino-amazónicos
-🍲 Gastronomía regional e ingredientes nativos
-🎉 Festividades y danzas
-🎨 Arte precolombino: Moche, Nazca, Inca, Chavín
-🏔️ Historia de los 25 departamentos
-
-Pregúntame por un departamento, una festividad o una leyenda y te cuento. ¿Por dónde empezamos?`;
-}
-
 export function Chat() {
   // Inti mascot integration active - 2026-10-17
   const [messages, setMessages] = useState<Message[]>([]);
@@ -214,23 +146,42 @@ export function Chat() {
     setIsTyping(true);
 
     try {
-      const allMessages = [...messages, userMessage];
-      const result = await chatServerFn({ messages: allMessages, lang });
-      if (!result.ok) {
-        throw new Error(result.error);
+      const history = messages
+        .map(m => ({ role: m.role as 'user' | 'assistant', content: String(m.content) }))
+        .filter(h => typeof h.role === 'string' && typeof h.content === 'string');
+
+      const payload = {
+        message: String(userMessage.content),
+        history
+      };
+
+      const res = await fetch("https://inti-cultura-peru.christopherdaniel0120.workers.dev/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        throw new Error(`Error del servidor: ${res.status}`);
       }
+
+      const data = await res.json();
+      if (!data || typeof data.answer !== "string") {
+        throw new Error("Respuesta inválida del backend");
+      }
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: result.content,
+        content: data.answer,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch {
+    } catch (err: any) {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: "Lo siento, hubo un error. Intenta de nuevo. 🔄",
+        content: `Lo siento, no pude obtener una respuesta. ${err?.message || ""}`.trim(),
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
