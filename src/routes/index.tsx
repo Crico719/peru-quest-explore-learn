@@ -99,11 +99,11 @@ function Index() {
   const tip = TIPS[g.lang][new Date().getDate() % TIPS[g.lang].length];
   const regions: ("Costa" | "Sierra" | "Selva")[] = ["Costa", "Sierra", "Selva"];
   const filtering = q.trim() !== "";
-   const navigate = useNavigate();
-const handleNodeSelect = (id: string) => {
-      if (practiceMode) setSelectedDept(id);
-      else navigate(`departamento/${id}`);
-    }
+  const navigate = useNavigate();
+  const handleNodeSelect = (id: string) => {
+    if (practiceMode) setSelectedDept(id);
+    else navigate({ to: "/departamento/$id", params: { id } });
+  };
   const visible = DEPARTMENTS.map((d, i) => ({ d, i })).filter(
     (x) => (!region || x.d.region === region) &&
       x.d.name.toLowerCase().includes(q.trim().toLowerCase())
@@ -150,7 +150,7 @@ const handleNodeSelect = (id: string) => {
             <div className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-600 transition-all" style={{ width: `${pctDept}%` }} />
           </div>
           <span className="text-[10px] font-bold">{pctDept}%</span>
-        </Link>
+        </button>
       </div>
     );
   };
@@ -303,7 +303,7 @@ const handleNodeSelect = (id: string) => {
                 ) : (
                   <span className="text-4xl">{d.emoji}</span>
                 )}
-</button>
+              </Link>
               <span className="mt-1 text-sm font-semibold">{d.name}</span>
               <span className="text-xs text-muted-foreground">{REGION_EMOJI[d.region]} {d.region}</span>
             </div>
@@ -347,7 +347,7 @@ const handleNodeSelect = (id: string) => {
           </div>
         </div>
       )}
+      <PracticeModal open={!!selectedDept} onClose={() => setSelectedDept(null)} deptId={selectedDept} />
     </main>
-<PracticeModal open={!!selectedDept} onClose={() => setSelectedDept(null)} deptId={selectedDept} />
   );
 }
