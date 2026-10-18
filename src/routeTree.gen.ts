@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AsistenteRouteImport } from './routes/asistente'
 import { Route as LogrosRouteImport } from './routes/logros'
+import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as DepartamentoIdRouteImport } from './routes/departamento.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +30,11 @@ const LogrosRoute = LogrosRouteImport.update({
   path: '/logros',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DepartamentoIdRoute = DepartamentoIdRouteImport.update({
   id: '/departamento/$id',
   path: '/departamento/$id',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/asistente': typeof AsistenteRoute
   '/logros': typeof LogrosRoute
+  '/perfil': typeof PerfilRoute
   '/departamento/$id': typeof DepartamentoIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/asistente': typeof AsistenteRoute
   '/logros': typeof LogrosRoute
+  '/perfil': typeof PerfilRoute
   '/departamento/$id': typeof DepartamentoIdRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,28 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/asistente': typeof AsistenteRoute
   '/logros': typeof LogrosRoute
+  '/perfil': typeof PerfilRoute
   '/departamento/$id': typeof DepartamentoIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/asistente' | '/logros' | '/departamento/$id'
+  fullPaths: '/' | '/asistente' | '/logros' | '/perfil' | '/departamento/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/asistente' | '/logros' | '/departamento/$id'
-  id: '__root__' | '/' | '/asistente' | '/logros' | '/departamento/$id'
+  to: '/' | '/asistente' | '/logros' | '/perfil' | '/departamento/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/asistente'
+    | '/logros'
+    | '/perfil'
+    | '/departamento/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AsistenteRoute: typeof AsistenteRoute
   LogrosRoute: typeof LogrosRoute
+  PerfilRoute: typeof PerfilRoute
   DepartamentoIdRoute: typeof DepartamentoIdRoute
 }
 
@@ -92,6 +108,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LogrosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/departamento/$id': {
       id: '/departamento/$id'
       path: '/departamento/$id'
@@ -106,6 +129,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AsistenteRoute: AsistenteRoute,
   LogrosRoute: LogrosRoute,
+  PerfilRoute: PerfilRoute,
   DepartamentoIdRoute: DepartamentoIdRoute,
 }
 export const routeTree = rootRouteImport
