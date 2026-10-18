@@ -234,10 +234,15 @@ function Index() {
           {visible.length === 0 && <p className="col-span-full text-center text-muted-foreground">🔍 …</p>}
         </div>
       ) : (
+        region !== null && (
         <div className="relative mx-auto mt-6 flex max-w-md flex-col items-center gap-6">
+          <button onClick={() => setRegion(null)} className="self-start text-sm font-bold text-muted-foreground hover:text-foreground">
+            ← {t(g.lang, "back")}
+          </button>
           {DEPARTMENTS.filter(d => d.region === region).map((d, i) => node(d, i))}
           <div className="text-5xl">🏆</div>
         </div>
+        )
       )}
       {sel && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-4 sm:items-center" onClick={() => setSelected(null)}>
