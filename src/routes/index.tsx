@@ -240,10 +240,10 @@ function Index() {
       {filtering ? (
         <div className="mx-auto mt-6 grid max-w-2xl grid-cols-2 gap-3 sm:grid-cols-3">
           {visible.map(({ d }) => (
-            <div key={d.id} className="flex flex-col items-center rounded-2xl bg-card p-3">
+            <div key={d.id} className="flex flex-col items-center rounded-2xl bg-card p-3 transition-transform hover:scale-[1.02] hover:shadow-md">
               <Link to="/departamento/$id" params={{ id: d.id }} aria-label={d.name} className="block">
                 {deptImages[d.id] ? (
-                  <img src={deptImages[d.id]} alt={d.name} className="h-20 w-20 rounded-full object-cover" />
+                  <img src={deptImages[d.id]} alt={d.name} className="h-20 w-20 rounded-full object-cover ring-2 ring-offset-2 ring-primary/20" />
                 ) : (
                   <span className="text-4xl">{d.emoji}</span>
                 )}
@@ -252,7 +252,14 @@ function Index() {
               <span className="text-xs text-muted-foreground">{REGION_EMOJI[d.region]} {d.region}</span>
             </div>
           ))}
-          {visible.length === 0 && <p className="col-span-full text-center text-muted-foreground">🔍 …</p>}
+          {visible.length === 0 && (
+            <div className="col-span-full rounded-2xl border border-dashed p-8 text-center">
+              <p className="text-2xl">🔍</p>
+              <p className="mt-2 font-semibold">No se encontraron departamentos</p>
+              <p className="text-sm text-muted-foreground">Intenta con otro término o limpia el filtro</p>
+              <button onClick={() => setQ("")} className="mt-3 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">Limpiar filtro</button>
+            </div>
+          )}
         </div>
       ) : (
         region !== null && (
