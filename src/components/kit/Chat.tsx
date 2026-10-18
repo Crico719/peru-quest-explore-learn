@@ -341,6 +341,5 @@ export function Chat() {
           </form>
         </div>
       </div>
-    </div>
   );
 }
