@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Mascot } from "@/components/Mascot";
+import { IntiMascot } from "@/components/IntiMascot";
 
 type Step = {
   title: string;
@@ -60,7 +60,7 @@ export function Onboarding({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true">
       <div className={`w-full max-w-lg rounded-3xl bg-card p-6 shadow-2xl ${reduced ? "" : "animate-in fade-in zoom-in"}`}>
         <div className="flex items-start gap-4">
-          <div className="shrink-0"><Mascot size={120} /></div>
+          <div className="shrink-0"><IntiMascot size={120} expression="happy" /></div>
           <div className="flex-1">
             <h2 className="text-2xl font-bold">¡Hola! Soy Inti ☀️</h2>
             <p className="mt-1 text-sm text-muted-foreground">

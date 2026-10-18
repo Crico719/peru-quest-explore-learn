@@ -5,7 +5,7 @@ import { useGame, exportEvidence } from "@/lib/game";
 import { t } from "@/lib/i18n";
 import { useWikiImage } from "@/lib/wiki";
 import { Progress } from "@/components/ui/progress";
-import { Mascot } from "@/components/Mascot";
+import { IntiMascot } from "@/components/IntiMascot";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -134,7 +134,7 @@ function Index() {
             <div className="mt-2 flex items-center gap-3">
               <h1 className="text-4xl font-bold sm:text-5xl">PERÚ QUEST</h1>
               <div className="relative cursor-pointer" title="Inti tu mascota">
-                <Mascot size={48} />
+                <IntiMascot size={48} expression="happy" />
               </div>
             </div>
             <p className="mt-2 text-lg font-medium">{t(g.lang, "tagline")}</p>

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Send, Bot, User, Sparkles, BookOpen, Brain, Calculator } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGame } from "@/lib/game";
-import { Mascot } from "@/components/Mascot";
+import { IntiMascot } from "@/components/IntiMascot";
 
 const INTI_TASKS = {
   es: [
@@ -41,7 +41,7 @@ const INtiMascot = ({ lang }: { lang: string }) => {
 
   return (
     <div className="relative inline-block cursor-pointer" onClick={() => setShowBubble(true)} title="Inti tu mascota">
-      <Mascot size={48} className="block" />
+      <IntiMascot size={48} className="block" expression="happy" />
 
       {showBubble && (
         <div className="absolute top-full left-1/2 -translate-x-1/2 -top-2 bg-card border-2 border-border rounded-xl px-3 py-2 text-sm whitespace-nowrap shadow-lg z-10">
