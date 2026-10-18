@@ -79,7 +79,7 @@ function Index() {
   const regions: ("Costa" | "Sierra" | "Selva")[] = ["Costa", "Sierra", "Selva"];
   const filtering = q.trim() !== "";
   const visible = DEPARTMENTS.map((d, i) => ({ d, i })).filter(
-    (x) => (x.d.region === region) &&
+    (x) => (!region || x.d.region === region) &&
       x.d.name.toLowerCase().includes(q.trim().toLowerCase())
   );
   const sel = selected ? DEPARTMENTS.find((d) => d.id === selected) : undefined;
