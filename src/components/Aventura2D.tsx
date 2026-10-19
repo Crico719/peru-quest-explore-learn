@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { DEPARTMENTS, locDept } from "@/data/departments";
 import { useGame } from "@/lib/game";
-import { soundManager, DEFAULT_BGM_URL } from "@/lib/audio";
+import { soundManager } from "@/lib/audio";
 import intiHappy from "@/assets/inti/inti-happy.png";
 import intiAngry from "@/assets/inti/inti-angry.png";
 import intiThinking from "@/assets/inti/inti-thinking.png";
@@ -152,16 +152,15 @@ const nextWorld = (id: WorldId) => WORLDS[WORLDS.findIndex((w) => w.id === id) +
 const deptOfWorld = (w: WorldConfig) => DEPARTMENTS.find((d) => d.id === w.deptId)!;
 
 /**
- * Música por mundo: intercambio automático en el singleton de audio.
- * PENDIENTE: no existen pistas reales por mundo. Hasta contar con 3
- * archivos con licencia compatible (p. ej. public/sounds/bgm-costa.mp3,
- * bgm-sierra.mp3, bgm-selva.mp3), todos los mundos usan el placeholder
- * global (DEFAULT_BGM_URL), único archivo actualmente disponible.
+ * Música por mundo: pistas reales bajo CC BY 4.0 (Kevin MacLeod, incompetech.com),
+ * servidas localmente desde public/sounds/ con atribución en
+ * public/sounds/CREDITS.md y en el pie de esta pantalla.
+ * El intercambio entre pistas ocurre en el singleton de audio (sin solapamientos).
  */
 const BGM_BY_WORLD: Record<WorldId, string> = {
-  costa: DEFAULT_BGM_URL,
-  sierra: DEFAULT_BGM_URL,
-  selva: DEFAULT_BGM_URL,
+  costa: "/sounds/bgm-costa.mp3",
+  sierra: "/sounds/bgm-sierra.mp3",
+  selva: "/sounds/bgm-selva.mp3",
 };
 
 /* ---------- Persistencia (clave propia, validada) ---------- */
@@ -210,7 +209,7 @@ function toQuestion(d: ReturnType<typeof locDept>, q: { q: string; o: string[]; 
   };
 }
 
-/** Mazo completo del departamento protagonista (hoy: 3 preguntas verificadas por dept) */
+/** Mazo completo del departamento protagonista (10 preguntas verificadas por dept) */
 function deptQuestions(world: WorldConfig, lang: "es" | "en"): Question[] {
   const d = locDept(deptOfWorld(world), lang);
   return shuffled(d.quiz).map((q) => toQuestion(d, q));
@@ -1042,6 +1041,12 @@ export function Aventura2D() {
         {es
           ? "Primera victoria contra cada jefe: +30 XP (una sola vez). Récord y mundos completados se guardan en tu dispositivo. Sin gemas ni coronas."
           : "First victory over each boss: +30 XP (once only). Best record and completed worlds are saved on your device. No gems or crowns."}
+      </p>
+      <p className="mt-1 text-center text-[10px] text-muted-foreground">
+        🎵 Bossa Antigua · Windswept · Bumba Crossing — Kevin MacLeod (
+        <a href="https://incompetech.com" target="_blank" rel="noreferrer" className="underline hover:text-foreground">incompetech.com</a>
+        ),{" "}
+        <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer" className="underline hover:text-foreground">CC BY 4.0</a>
       </p>
     </div>
   );
