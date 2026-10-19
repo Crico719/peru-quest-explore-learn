@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { DEPARTMENTS, locDept } from "@/data/departments";
 import { useGame } from "@/lib/game";
-import { soundManager } from "@/lib/audio";
+import { soundManager, DEFAULT_BGM_URL } from "@/lib/audio";
 import intiHappy from "@/assets/inti/inti-happy.png";
 import intiAngry from "@/assets/inti/inti-angry.png";
 import intiThinking from "@/assets/inti/inti-thinking.png";
@@ -10,14 +10,14 @@ import intiSad from "@/assets/inti/inti-sad.png";
 
 /**
  * AVENTURA 2D — tres mundos (Costa, Sierra, Selva) con un único motor:
- * física, controles y colisiones compartidos; cada mundo aporta paleta,
- * fondo parallax procedural, obstáculos, velocidad y jefe final.
+ * física, controles y colisiones compartidos; cada mundo tiene paleta,
+ * fondo parallax procedural, obstáculos, velocidad, un departamento
+ * protagonista (meta educativa) y un jefe con preguntas de ese departamento.
  *
- * Registro: récord de distancia y mundos completados en localStorage
- * (clave propia, validada). Sin XP/gemas/coronas — los mundos completados
- * se registran una sola vez en el log de evidencias vía actividad
- * "aventura" (log-only en game.tsx). Punto de integración de XP: pendiente
- * hasta que exista una vía de recompensa sin coronas/gemas.
+ * XP: primera victoria contra cada jefe otorga +30 XP vía la actividad
+ * "aventura" (reclamación única y atómica en game.tsx — sin coronas,
+ * gemas ni racha). Récord y mundos completados en localStorage
+ * (clave propia "peru-quest-aventura", validada).
  */
 
 const W = 800;
@@ -42,6 +42,9 @@ type Question = { q: string; options: string[]; answer: number; dept: string; fa
 type WorldConfig = {
   id: WorldId;
   region: Region;
+  /** Departamento protagonista del nivel (meta educativa) */
+  deptId: string;
+  objective: { es: string; en: string };
   emoji: string;
   name: { es: string; en: string };
   tip: { es: string; en: string };
@@ -61,6 +64,11 @@ const WORLDS: WorldConfig[] = [
   {
     id: "costa",
     region: "Costa",
+    deptId: "tumbes",
+    objective: {
+      es: "Ubica Tumbes en la frontera norte y descubre sus manglares únicos y su ceviche de conchas negras.",
+      en: "Locate Tumbes on the northern border and discover its unique mangroves and black-shell ceviche.",
+    },
     emoji: "🏖️",
     name: { es: "Inti en la Costa", en: "Inti in the Costa" },
     tip: {
@@ -84,6 +92,11 @@ const WORLDS: WorldConfig[] = [
   {
     id: "sierra",
     region: "Sierra",
+    deptId: "cusco",
+    objective: {
+      es: "Descubre el Cusco, capital del Imperio inca: Machu Picchu, Sacsayhuamán y el Inti Raymi.",
+      en: "Discover Cusco, capital of the Inca Empire: Machu Picchu, Sacsayhuamán and Inti Raymi.",
+    },
     emoji: "⛰️",
     name: { es: "Inti en la Sierra", en: "Inti in the Highlands" },
     tip: {
@@ -107,6 +120,11 @@ const WORLDS: WorldConfig[] = [
   {
     id: "selva",
     region: "Selva",
+    deptId: "loreto",
+    objective: {
+      es: "Explora Loreto, el departamento más grande: Iquitos, el río Amazonas y la Reserva Pacaya Samiria.",
+      en: "Explore Loreto, Peru's largest department: Iquitos, the Amazon river and Pacaya Samiria Reserve.",
+    },
     emoji: "🌳",
     name: { es: "Inti en la Selva", en: "Inti in the Jungle" },
     tip: {
@@ -131,6 +149,20 @@ const WORLDS: WorldConfig[] = [
 
 const worldById = (id: WorldId) => WORLDS.find((w) => w.id === id)!;
 const nextWorld = (id: WorldId) => WORLDS[WORLDS.findIndex((w) => w.id === id) + 1]?.id;
+const deptOfWorld = (w: WorldConfig) => DEPARTMENTS.find((d) => d.id === w.deptId)!;
+
+/**
+ * Música por mundo: intercambio automático en el singleton de audio.
+ * PENDIENTE: no existen pistas reales por mundo. Hasta contar con 3
+ * archivos con licencia compatible (p. ej. public/sounds/bgm-costa.mp3,
+ * bgm-sierra.mp3, bgm-selva.mp3), todos los mundos usan el placeholder
+ * global (DEFAULT_BGM_URL), único archivo actualmente disponible.
+ */
+const BGM_BY_WORLD: Record<WorldId, string> = {
+  costa: DEFAULT_BGM_URL,
+  sierra: DEFAULT_BGM_URL,
+  selva: DEFAULT_BGM_URL,
+};
 
 /* ---------- Persistencia (clave propia, validada) ---------- */
 
@@ -163,15 +195,12 @@ function persistSave(save: AventuraSave) {
   }
 }
 
-/* ---------- Preguntas filtradas por región del mundo ---------- */
+/* ---------- Preguntas: meta educativa por departamento ---------- */
 
-function pickQuestion(region: Region, lang: "es" | "en"): Question | null {
-  const pool = DEPARTMENTS.filter((d) => d.region === region);
-  if (pool.length === 0) return null;
-  const base = pool[Math.floor(Math.random() * pool.length)]!;
-  const d = locDept(base, lang);
-  const q = d.quiz[Math.floor(Math.random() * d.quiz.length)]!;
-  const order = q.o.map((_, k) => k).sort(() => Math.random() - 0.5);
+const shuffled = <T,>(arr: T[]): T[] => [...arr].sort(() => Math.random() - 0.5);
+
+function toQuestion(d: ReturnType<typeof locDept>, q: { q: string; o: string[]; a: number }): Question {
+  const order = shuffled(q.o.map((_, k) => k));
   return {
     q: q.q,
     options: order.map((k) => q.o[k]!),
@@ -179,6 +208,22 @@ function pickQuestion(region: Region, lang: "es" | "en"): Question | null {
     dept: d.name,
     fact: d.facts[0] ? `${d.facts[0].t}: ${d.facts[0].d}` : "",
   };
+}
+
+/** Mazo completo del departamento protagonista (hoy: 3 preguntas verificadas por dept) */
+function deptQuestions(world: WorldConfig, lang: "es" | "en"): Question[] {
+  const d = locDept(deptOfWorld(world), lang);
+  return shuffled(d.quiz).map((q) => toQuestion(d, q));
+}
+
+/** Respaldo: pregunta aleatoria de la región del mundo (para puertas extra) */
+function pickRegionQuestion(region: Region, lang: "es" | "en"): Question | null {
+  const pool = DEPARTMENTS.filter((d) => d.region === region);
+  if (pool.length === 0) return null;
+  const base = pool[Math.floor(Math.random() * pool.length)]!;
+  const d = locDept(base, lang);
+  const q = d.quiz[Math.floor(Math.random() * d.quiz.length)]!;
+  return toQuestion(d, q);
 }
 
 /* ---------- Fondos parallax procedurales por mundo ---------- */
@@ -317,6 +362,9 @@ export function Aventura2D() {
   });
   const keys = useRef({ left: false, right: false, jump: false });
   const worldRef = useRef<WorldId>("costa");
+  // Mazos de preguntas: departamentales primero, región como respaldo
+  const gateDeck = useRef<Question[]>([]);
+  const bossDeck = useRef<Question[]>([]);
 
   // React UI
   const [hud, setHud] = useState({ coins: 0, distance: 0 });
@@ -327,6 +375,7 @@ export function Aventura2D() {
   const [bossTimer, setBossTimer] = useState(BOSS_TIME);
   const [save, setSave] = useState<AventuraSave>({ bestDistance: 0, worldsCompleted: [] });
   const saveRef = useRef(save);
+  const [firstClear, setFirstClear] = useState(true);
 
   // Cargar sprites (4 expresiones disponibles) y datos guardados
   useEffect(() => {
@@ -356,7 +405,7 @@ export function Aventura2D() {
   }, []);
 
   const startRun = useCallback(() => {
-    const world = worldRef.current;
+    const world = worldById(worldRef.current);
     state.current = {
       running: true,
       paused: false,
@@ -365,7 +414,7 @@ export function Aventura2D() {
       y: GROUND - 48,
       vy: 0,
       distance: 0,
-      speed: worldById(world).speedBase,
+      speed: world.speedBase,
       coins: 0,
       invuln: 0,
       expr: "happy",
@@ -374,12 +423,16 @@ export function Aventura2D() {
       entities: [],
       frame: 0,
     };
+    // Mazo de puertas: primero las 3 preguntas del departamento protagonista,
+    // después respaldo regional. (Tras un gesto del usuario → BGM permitido.)
+    gateDeck.current = deptQuestions(world, g.lang);
     setHud({ coins: 0, distance: 0 });
     setQuestion(null);
     setQAnswered(null);
     setPhase("playing");
     soundManager.playSfx("click");
-  }, []);
+    soundManager.playMusic(BGM_BY_WORLD[world.id]);
+  }, [g.lang]);
 
   const chooseWorld = useCallback((id: WorldId) => {
     worldRef.current = id;
@@ -387,7 +440,9 @@ export function Aventura2D() {
   }, []);
 
   const openQuestion = useCallback(() => {
-    setQuestion(pickQuestion(worldById(worldRef.current).region, g.lang));
+    const world = worldById(worldRef.current);
+    const q = gateDeck.current.length > 0 ? gateDeck.current.shift()! : pickRegionQuestion(world.region, g.lang);
+    setQuestion(q);
     setQAnswered(null);
     state.current.paused = true;
     setPhase("question");
@@ -395,12 +450,15 @@ export function Aventura2D() {
 
   const startBoss = useCallback(() => {
     const s = state.current;
+    const world = worldById(worldRef.current);
     s.paused = true;
     s.expr = "thinking";
     s.exprTicks = 120;
     updateBest(Math.floor(s.distance / 10));
+    // El jefe usa las preguntas del departamento protagonista del nivel
+    bossDeck.current = deptQuestions(world, g.lang);
     setBoss({ idx: 0, score: 0 });
-    setQuestion(pickQuestion(worldById(worldRef.current).region, g.lang));
+    setQuestion(bossDeck.current[0] ?? pickRegionQuestion(world.region, g.lang));
     setQAnswered(null);
     setBossTimer(BOSS_TIME);
     setPhase("boss");
@@ -410,8 +468,11 @@ export function Aventura2D() {
     const id = worldRef.current;
     const s = state.current;
     updateBest(Math.floor(s.distance / 10));
+    // ¿Primera victoria? La reclamación atómica del XP vive en game.tsx
+    const first = !(g.aventuraXpClaimed ?? []).includes(id);
+    setFirstClear(first);
     if (!saveRef.current.worldsCompleted.includes(id)) {
-      // Marcar completado + registrar en el log UNA sola vez (sin XP/gemas/coronas)
+      // Marcar completado + registrar en el log (XP solo la primera vez)
       const next = { ...saveRef.current, worldsCompleted: [...saveRef.current.worldsCompleted, id] };
       saveRef.current = next;
       setSave(next);
@@ -489,8 +550,9 @@ export function Aventura2D() {
       else defeatBoss();
       return;
     }
+    const world = worldById(worldRef.current);
     setBoss((b) => ({ ...b, idx: b.idx + 1 }));
-    setQuestion(pickQuestion(worldById(worldRef.current).region, g.lang));
+    setQuestion(bossDeck.current[boss.idx + 1] ?? pickRegionQuestion(world.region, g.lang));
     setQAnswered(null);
     setBossTimer(BOSS_TIME);
   }, [boss, completeWorld, defeatBoss, g.lang]);
@@ -507,8 +569,10 @@ export function Aventura2D() {
   }, [phase, bossTimer, qAnswered, answerBoss]);
 
   const retryBoss = useCallback(() => {
+    const world = worldById(worldRef.current);
+    bossDeck.current = deptQuestions(world, g.lang);
     setBoss({ idx: 0, score: 0 });
-    setQuestion(pickQuestion(worldById(worldRef.current).region, g.lang));
+    setQuestion(bossDeck.current[0] ?? pickRegionQuestion(world.region, g.lang));
     setQAnswered(null);
     setBossTimer(BOSS_TIME);
     setPhase("boss");
@@ -516,8 +580,12 @@ export function Aventura2D() {
 
   const backToSelect = useCallback(() => {
     state.current.running = false;
+    soundManager.stopMusic();
     setPhase("select");
   }, []);
+
+  // La música nunca queda huérfana al salir de la página
+  useEffect(() => () => soundManager.stopMusic(), []);
 
   // Teclado
   useEffect(() => {
@@ -695,6 +763,7 @@ export function Aventura2D() {
             📏 {hud.distance}/{BOSS_AT / 10} m
           </span>
           <span className="chip">🏅 {es ? "Récord" : "Best"}: {save.bestDistance} m</span>
+          <span className="chip hidden sm:inline-flex">📍 {deptOfWorld(world).name}</span>
         </div>
       </div>
 
@@ -720,11 +789,15 @@ export function Aventura2D() {
                   <div key={w.id} className={`rounded-3xl border-2 border-border bg-card p-4 text-center ${locked ? "opacity-50" : ""}`}>
                     <p className="text-4xl">{w.emoji}</p>
                     <h4 className="mt-1 font-bold">{es ? w.name.es : w.name.en}</h4>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="mt-1 text-xs font-bold text-primary">
+                      📍 {deptOfWorld(w).name}
+                      {done && <span className="ml-1 text-gold">👑</span>}
+                    </p>
+                    <p className="mt-1 min-h-8 text-[11px] leading-snug text-muted-foreground">{es ? w.objective.es : w.objective.en}</p>
+                    <p className="mt-1 text-[11px] text-muted-foreground">
                       {w.boss.emoji} {es ? "Jefe: " : "Boss: "}
                       {es ? w.boss.name.es : w.boss.name.en}
                     </p>
-                    {done && <p className="mt-1 text-xs font-bold text-gold">👑 {es ? "Completado" : "Completed"}</p>}
                     <button
                       disabled={locked}
                       onClick={() => chooseWorld(w.id)}
@@ -750,7 +823,12 @@ export function Aventura2D() {
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60 p-6 text-center text-white">
             <p className="text-4xl">{world.emoji}</p>
             <h3 className="text-2xl font-bold">{es ? world.name.es : world.name.en}</h3>
-            <p className="max-w-md text-sm">{es ? world.tip.es : world.tip.en}</p>
+            <p className="text-xs font-bold text-primary">📍 {deptOfWorld(world).name}</p>
+            <p className="max-w-md text-sm">
+              <span className="font-bold">{es ? "Meta: " : "Goal: "}</span>
+              {es ? world.objective.es : world.objective.en}
+            </p>
+            <p className="text-xs opacity-80">{es ? world.tip.es : world.tip.en}</p>
             <p className="text-xs opacity-80">
               {es
                 ? `Llega a ${BOSS_AT / 10} m y vence a ${world.boss.emoji} ${world.boss.name.es} con ${BOSS_NEED} de ${BOSS_QUESTIONS} respuestas.`
@@ -821,6 +899,9 @@ export function Aventura2D() {
                 {world.boss.emoji} {es ? world.boss.name.es : world.boss.name.en}
               </p>
               <p className="text-xs font-bold text-primary">
+                📍 {es ? "Departamento" : "Department"}: {deptOfWorld(world).name}
+              </p>
+              <p className="text-xs font-bold text-primary">
                 {es ? `Desafío ${boss.idx + 1}/${BOSS_QUESTIONS}` : `Challenge ${boss.idx + 1}/${BOSS_QUESTIONS}`} ·{" "}
                 {es ? `Necesitas ${BOSS_NEED} aciertos` : `You need ${BOSS_NEED} correct`} · ⭐ {boss.score}
               </p>
@@ -883,7 +964,12 @@ export function Aventura2D() {
               {world.boss.emoji} {es ? world.boss.name.es : world.boss.name.en}!
             </h3>
             <p className="text-sm">
-              {es ? "Mundo completado: queda registrado en tu evidencia de aprendizaje." : "World completed: recorded in your learning evidence."}
+              {firstClear
+                ? es ? "⚡ +30 XP — primera vez que vences a este guardián. Queda registrado en tu evidencia." : "⚡ +30 XP — first time defeating this guardian. Recorded in your evidence."
+                : es ? "Ya habías vencido a este guardián: sin XP adicional esta vez." : "You had already defeated this guardian: no extra XP this time."}
+            </p>
+            <p className="text-xs opacity-80">
+              📍 {deptOfWorld(world).name} · {es ? "Meta cumplida" : "Goal achieved"}
             </p>
             <div className="mt-2 flex flex-wrap justify-center gap-2">
               {next && (
@@ -954,8 +1040,8 @@ export function Aventura2D() {
       </div>
       <p className="mt-2 text-center text-xs text-muted-foreground">
         {es
-          ? "Récord y mundos completados se guardan en tu dispositivo. Sin XP, gemas ni coronas."
-          : "Best record and completed worlds are saved on your device. No XP, gems or crowns."}
+          ? "Primera victoria contra cada jefe: +30 XP (una sola vez). Récord y mundos completados se guardan en tu dispositivo. Sin gemas ni coronas."
+          : "First victory over each boss: +30 XP (once only). Best record and completed worlds are saved on your device. No gems or crowns."}
       </p>
     </div>
   );

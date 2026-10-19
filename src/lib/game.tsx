@@ -11,10 +11,12 @@ type State = {
   xp: number; gems: number; streak: number; lastDay: string | null;
   progress: Record<string, DeptProgress>; log: LogEntry[]; dark: boolean; lang: Lang;
   profile: { name: string; avatar: string };
+  /** Mundos de la aventura 2D cuyo XP ya fue reclamado (evita duplicados) */
+  aventuraXpClaimed?: string[];
   _v?: number;
 };
 
-const initial: State = { xp: 0, gems: 0, streak: 0, lastDay: null, progress: {}, log: [], dark: false, lang: "es", profile: { name: "Explorador", avatar: "🦉" }, _v: 2 };
+const initial: State = { xp: 0, gems: 0, streak: 0, lastDay: null, progress: {}, log: [], dark: false, lang: "es", profile: { name: "Explorador", avatar: "🦉" }, aventuraXpClaimed: [], _v: 2 };
 const KEY = "peru-quest-v1";
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -68,15 +70,33 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [s, loaded]);
 
   const complete = useCallback((dept: string, a: Activity, score: number, max: number) => {
-    // "locate" (práctica de localización en el mapa) y "aventura" (mundos de la
-    // aventura 2D): solo registran en el log de evidencias.
-    // Sin XP, gemas, coronas, progreso ni racha — reutilizan el log existente.
-    if (a === "locate" || a === "aventura") {
+    // "locate" (práctica de localización en el mapa): solo registra en el log
+    // de evidencias. Sin XP, gemas, coronas, progreso ni racha.
+    if (a === "locate") {
       setS((prev) => ({
         ...prev,
         log: [...prev.log, { at: new Date().toISOString(), dept, activity: a, score, max, xp: 0 }],
       }));
       return 0;
+    }
+    // "aventura" (victoria contra el jefe de un mundo): XP verificado y de
+    // reclamación única. La reclamación vive en el MISMO estado que xp
+    // (peru-quest-v1), así que se guardan atómicamente: una recarga, un
+    // reintento o un doble evento de victoria nunca duplican el XP.
+    // No otorga gemas, coronas, progreso de departamento ni racha.
+    if (a === "aventura") {
+      const WORLD_XP = 30;
+      setS((prev) => {
+        const claimed = prev.aventuraXpClaimed ?? [];
+        const first = !claimed.includes(dept);
+        return {
+          ...prev,
+          xp: first ? prev.xp + WORLD_XP : prev.xp,
+          aventuraXpClaimed: first ? [...claimed, dept] : claimed,
+          log: [...prev.log, { at: new Date().toISOString(), dept, activity: a, score, max, xp: first ? WORLD_XP : 0 }],
+        };
+      });
+      return (s.aventuraXpClaimed ?? []).includes(dept) ? 0 : WORLD_XP;
     }
     const xp = a === "quiz" ? score * 10 : 15;
     const p = { ...(s.progress[dept] ?? {}) };
