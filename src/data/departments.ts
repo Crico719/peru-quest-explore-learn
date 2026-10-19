@@ -489,7 +489,7 @@ export const DEPARTMENTS: Department[] = [
       { q: "El King Kong es un…", o: ["Plato de cuy", "Dulce", "Baile", "Río"], a: 1 },      { q: "¿Cuál de estos atractivos está en Lambayeque?", o: ["Mina de Santa Bárbara","Reserva Pacaya Samiria","Choquequirao","Museo Tumbas Reales de Sipán"], a: 3 },
       { q: "¿Cuál de estos platos es típico de Lambayeque?", o: ["Arroz con pato","Patachi","Tacacho con cecina","Cuy chactado"], a: 0 },
       { q: "¿Qué fiesta se celebra en Lambayeque?", o: ["Danza de Tijeras","Fiesta de la Cruz de Motupe","Fiesta de San Juan","Carnaval Abanquino"], a: 1 },
-      { q: "¿Cuántas pirámides de adobe tiene Túcume?", o: ["5","60","26","100"], a: 2 },
+      { q: "¿De qué material son las pirámides de Túcume?", o: ["Adobe","Piedra pulida","Mármol","Metal"], a: 0 },
       { q: "¿Qué se vende en el mercado Modelo de Chiclayo?", o: ["Autos antiguos","Barcos","Cuadros coloniales","Hierbas curanderas"], a: 3 },
       { q: "¿Qué árboles milenarios tiene el Bosque de Pómac?", o: ["Algarrobos","Pinos","Queñuas","Caña brava"], a: 0 },
       { q: "¿Cómo se llama a Chiclayo?", o: ["Capital de la amistad","Ciudad blanca","Capital del folclore","Ciudad de los reyes"], a: 0 },
@@ -547,7 +547,7 @@ export const DEPARTMENTS: Department[] = [
       { q: "¿Cuál de estos atractivos está en Cajamarca?", o: ["Líneas de Nazca","Kuélap","Baños del Inca","Arco Parabólico"], a: 2 },
       { q: "¿Cuál de estos platos es típico de Cajamarca?", o: ["Carapulcra con sopa seca","Juane","Picante a la tacneña","Caldo verde"], a: 3 },
       { q: "¿Qué fiesta se celebra en Cajamarca?", o: ["Corpus Christi","Festival de la Vendimia","Raymi Llaqta","Procesión de la Bandera"], a: 0 },
-      { q: "¿A qué temperatura llegan los Baños del Inca?", o: ["Hasta 10 °C","Hasta 70 °C","Hasta 100 °C","Son aguas heladas"], a: 1 },
+      { q: "¿Qué son los Baños del Inca?", o: ["Aguas termales","Unas minas de oro","Unas pirámides","Unos volcanes"], a: 0 },
       { q: "¿Qué ofreció Atahualpa a cambio de su libertad en Cajamarca?", o: ["Sus tierras","Un ejército","Llenar un cuarto de oro y plata","Nada"], a: 2 },
       { q: "¿Qué son las Ventanillas de Otuzco?", o: ["Ventanas coloniales","Minas de oro","Cuevas de cristal","Tumbas excavadas en roca"], a: 3 },
 
@@ -576,7 +576,7 @@ export const DEPARTMENTS: Department[] = [
       { q: "¿Cuál de estos platos es típico de Amazonas?", o: ["Ceviche","Patachi","Cuy chactado","Juane"], a: 3 },
       { q: "¿Qué fiesta se celebra en Amazonas?", o: ["Raymi Llaqta","Señor de los Milagros","Danza de Tijeras","Santa Fortunata"], a: 0 },
       { q: "¿Qué personaje destaca en Amazonas?", o: ["Santa Rosa de Lima","Toribio Rodríguez de Mendoza","Danzantes de tijeras","Mariano Lino Urquieta"], a: 1 },
-      { q: "¿Cuánto miden los muros de la fortaleza de Kuélap?", o: ["Hasta 2 m","Hasta 50 m","Hasta 20 m","Hasta 100 m"], a: 2 },
+      { q: "¿Quién construyó la fortaleza de Kuélap?", o: ["La cultura Chachapoyas","Los incas","Los moches","Los waris"], a: 0 },
       { q: "¿Qué ave destaca en los bosques nubosos de Amazonas?", o: ["El pingüino","El flamenco","El gallinazo","El colibrí cola de espátula"], a: 3 },
       { q: "¿Cómo son los sarcófagos de Karajía?", o: ["De 2,5 m sobre un acantilado","Subterráneos","De cristal","Flotantes en un lago"], a: 0 },
 
@@ -634,7 +634,7 @@ export const DEPARTMENTS: Department[] = [
       { q: "¿Cuál de estos atractivos está en San Martín?", o: ["Líneas de Nazca","Catarata de Ahuashiyacu","Lago Titicaca","Máncora"], a: 1 },
       { q: "¿Cuál de estos platos es típico de San Martín?", o: ["Carapulcra con sopa seca","Chairo","Juane","Seco de chabelo"], a: 2 },
       { q: "¿Qué fiesta se celebra en San Martín?", o: ["Festival de la Vendimia","Virgen de la Candelaria","Semana Santa de Catacaos","Festival de la Orquídea"], a: 3 },
-      { q: "¿Cuántas especies de orquídeas tiene Moyobamba?", o: ["Más de 3 500","Unas 20","Cerca de 100","Ninguna"], a: 0 },
+      { q: "¿En qué valle está Moyobamba?", o: ["En el Alto Mayo","En el valle del Mantaro","En el valle Sagrado","En el valle de Ica"], a: 0 },
       { q: "¿Qué ciudad de San Martín es la 'ciudad de las palmeras'?", o: ["Moyobamba","Tarapoto","Lamas","Juanjuí"], a: 1 },
       { q: "¿Qué es el Parque Nacional Río Abiseo?", o: ["Un estadio","Un mercado","Patrimonio natural y cultural","Un puerto"], a: 2 },
 
@@ -649,7 +649,7 @@ export const DEPARTMENTS: Department[] = [
     fiestas: ["Semana Santa de Huaraz", "Fiesta del Señor de la Soledad"],
     person: { name: "Pedro Pablo Atusparia", desc: "Líder indígena de la rebelión de 1885." },
     facts: [
-      { t: "Huascarán", d: "La montaña más alta del Perú: 6 768 m." },
+      { t: "Huascarán", d: "La montaña más alta del Perú: 6 757 m." },
       { t: "Chavín", d: "Templo con galerías subterráneas y el Lanzón." },
       { t: "Puya Raimondi", d: "Planta que florece tras unos 100 años." },
       { t: "Cordillera Blanca", d: "La cordillera tropical más alta del mundo." },
@@ -664,7 +664,7 @@ export const DEPARTMENTS: Department[] = [
       { q: "¿Cuál de estos platos es típico de Áncash?", o: ["Shambar","Pescado a la patarashca","Chiriuchu","Pachamanca"], a: 3 },
       { q: "¿Qué fiesta se celebra en Áncash?", o: ["Semana Santa de Huaraz","Festival de la Marinera","Fiesta de San Juan","Inti Raymi"], a: 0 },
       { q: "¿Qué personaje destaca en Áncash?", o: ["César Vallejo","Pedro Pablo Atusparia","Pueblo Shipibo-Konibo","Pachacútec"], a: 1 },
-      { q: "¿Cuánto mide el nevado Huascarán?", o: ["4 330 m","3 812 m","6 768 m","5 950 m"], a: 2 },
+      { q: "¿En qué parque nacional está el Huascarán?", o: ["El Parque Nacional Huascarán","El Parque Nacional del Manu","El Parque Nacional Río Abiseo","El Parque Nacional Cerros de Amotape"], a: 0 },
       { q: "¿Cuál es la cordillera tropical más alta del mundo?", o: ["La Cordillera Azul","La Cordillera Negra","La Sierra de Córdoba","La Cordillera Blanca"], a: 3 },
 
     ],
@@ -721,7 +721,7 @@ export const DEPARTMENTS: Department[] = [
       { q: "¿Cuál de estos atractivos está en Pasco?", o: ["Bosque de Piedras de Huayllay","Museo Tumbas Reales de Sipán","Lago Titicaca","Catarata de Ahuashiyacu"], a: 0 },
       { q: "¿Cuál de estos platos es típico de Pasco?", o: ["Arroz con pato","Pachamanca","Chairo","Juane"], a: 1 },
       { q: "¿Qué fiesta se celebra en Pasco?", o: ["Fiesta de la Cruz de Motupe","Virgen de la Candelaria","Fiesta del Chunchu","Festival de la Orquídea"], a: 2 },
-      { q: "¿A qué altura está Cerro de Pasco?", o: ["A unos 2 000 m","Al nivel del mar","A unos 6 000 m","A unos 4 330 m"], a: 3 },
+      { q: "Cerro de Pasco es una de las ciudades más…", o: ["Altas del mundo","Cálidas del Perú","Costeras del Perú","Pobladas de la selva"], a: 0 },
       { q: "¿Quiénes fundaron Pozuzo en 1859?", o: ["Austriacos y alemanes","Chinos y japoneses","Italianos y españoles","Franceses e ingleses"], a: 0 },
       { q: "¿Qué es Oxapampa?", o: ["Una playa","Una reserva de biosfera","Un volcán","Un desierto"], a: 1 },
 
@@ -746,7 +746,7 @@ export const DEPARTMENTS: Department[] = [
     quiz: [
       { q: "¿Qué ciudad antigua está en Lima?", o: ["Caral", "Chan Chan", "Machu Picchu", "Kuélap"], a: 0 },
       { q: "¿Qué procesión es en octubre?", o: ["Señor de los Milagros", "Candelaria", "Qoyllur Rit'i", "Corpus"], a: 0 },
-      { q: "Lima fue la 'Ciudad de los…'", o: ["Reyes", "Vientos", "Incas", "Sol"], a: 0 },      { q: "¿Cuál es la capital de Lima?", o: ["Lima","Cajamarca","Pucallpa","Abancay"], a: 0 },
+      { q: "Lima fue la 'Ciudad de los…'", o: ["Reyes", "Vientos", "Incas", "Sol"], a: 0 },      { q: "¿Qué es la Costa Verde de Lima?", o: ["Acantilados frente al Pacífico","Un desierto interior","Una cordillera nevada","Un río amazónico"], a: 0 },
       { q: "¿Cuál de estos atractivos está en Lima?", o: ["Baños del Inca","Centro Histórico","Laguna Yarinacocha","Choquequirao"], a: 1 },
       { q: "¿Cuál de estos platos es típico de Lima?", o: ["Caldo verde","Pescado a la patarashca","Ceviche","Cuy chactado"], a: 2 },
       { q: "¿Qué fiesta se celebra en Lima?", o: ["Carnaval de Cajamarca","Fiesta de San Juan","Carnaval Abanquino","Santa Rosa de Lima"], a: 3 },
@@ -954,7 +954,7 @@ export const DEPARTMENTS: Department[] = [
       { q: "¿Qué fiesta se celebra en Cusco?", o: ["Semana Turística de Tumbes","Fiesta de San Juan","Qoyllur Rit'i","Semana Santa de Huaraz"], a: 2 },
       { q: "¿Qué personaje destaca en Cusco?", o: ["Pedro Ruiz Gallo","Fitzcarrald","Pedro Pablo Atusparia","Pachacútec"], a: 3 },
       { q: "¿Qué significa 'Qosqo'?", o: ["Ombligo","Sol","Montaña","Río sagrado"], a: 0 },
-      { q: "¿Qué piedras tienen los muros de Sacsayhuamán?", o: ["De menos de una tonelada","De más de 100 toneladas","De adobe","De cristal"], a: 1 },
+      { q: "¿Quién comenzó la construcción de Sacsayhuamán?", o: ["El inca Pachacútec","Huayna Cápac","Atahualpa","Manco Cápac"], a: 0 },
 
     ],
     steps: ["Asar el cuy", "Preparar gallina y charqui", "Agregar cuy, maíz tostado y queso", "Servir el chiriuchu frío"],

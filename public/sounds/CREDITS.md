@@ -37,5 +37,9 @@ https://creativecommons.org/licenses/by/4.0/
   modificación y su distribución con atribución (https://incompetech.com/music/royalty-free/faq.html).
 - Este archivo (`public/sounds/CREDITS.md`) y el pie de pantalla de la
   Aventura 2D contienen el crédito visible.
-- La licencia no exige menciónar cortes/ediciones; los archivos se usan sin
-  modificaciones.
+- Los MP3 distribuidos fueron re-codificados desde las descargas originales
+  (256–320 kbps) a 112 kbps estéreo 44,1 kHz con FFmpeg 9.0.2
+  (`-codec:a libmp3lame -b:a 112k -ar 44100`) para reducir el peso de la
+  app; duración idéntica verificada con ffprobe y decodificación completa
+  sin errores. La licencia no exige mencionar este re-encode; se documenta
+  por transparencia.
