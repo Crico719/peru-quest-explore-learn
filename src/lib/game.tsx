@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import type React from "react";
 import { DEPARTMENTS } from "@/data/departments";
 
-export type Activity = "quiz" | "memory" | "tap" | "order" | "locate";
+export type Activity = "quiz" | "memory" | "tap" | "order" | "locate" | "aventura";
 export type DeptProgress = { quiz?: number; memory?: boolean; tap?: boolean; order?: boolean; facts?: number[] };
 export type LogEntry = { at: string; dept: string; activity: Activity; score: number; max: number; xp: number };
 export type Lang = "es" | "en";
@@ -68,9 +68,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [s, loaded]);
 
   const complete = useCallback((dept: string, a: Activity, score: number, max: number) => {
-    // "locate" (práctica de localización en el mapa): solo registra en el log.
-    // Sin XP, gemas, coronas, progreso ni racha — reutiliza el log de evidencias existente.
-    if (a === "locate") {
+    // "locate" (práctica de localización en el mapa) y "aventura" (mundos de la
+    // aventura 2D): solo registran en el log de evidencias.
+    // Sin XP, gemas, coronas, progreso ni racha — reutilizan el log existente.
+    if (a === "locate" || a === "aventura") {
       setS((prev) => ({
         ...prev,
         log: [...prev.log, { at: new Date().toISOString(), dept, activity: a, score, max, xp: 0 }],
