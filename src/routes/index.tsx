@@ -188,22 +188,23 @@ function Index() {
               </div>
             ))}
           </dl>
-        </div>
-      </section>
+</div>
 
-      {/* Progreso y misión de hoy */}
-      <section className="mt-6 grid gap-4 md:grid-cols-3">
-        <div className="card-3d rounded-3xl p-5">
-          <h3 className="text-sm font-bold uppercase text-muted-foreground">{t(g.lang, "progress")}</h3>
-          <p className="mt-2 text-2xl font-bold">👑 {totalCrowns} / {maxCrowns} coronas</p>
-          <Progress value={pct} className="mt-3 h-3" aria-label={`${t(g.lang, "progress")}: ${pct}%`} />
-          <p className="mt-2 text-xs text-muted-foreground">{pct}% completado</p>
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            <span className="chip text-streak" title="Racha">🔥 {g.streak}</span>
-            <span className="chip text-gem" title="Gemas">💎 {g.gems}</span>
-            <span className="chip text-gold" title="XP">⚡ {g.xp} XP</span>
-          </div>
-        </div>
+{/* Estadísticas */}
+<section className="mt-6 grid gap-4 md:grid-cols-2">
+  <div className="card-3d rounded-3xl p-5 flex flex-col gap-2">
+    <h3 className="text-sm font-bold uppercase text-muted-foreground">{t(g.lang, "progress")}</h3>
+    <p className="text-2xl font-bold">👑 {totalCrowns} / {maxCrowns} coronas</p>
+    <Progress value={pct} className="mt-3 h-3" aria-label={`${t(g.lang, "progress")}: ${pct}%`} />
+    <p className="mt-1 text-xs text-muted-foreground">{pct}% completado</p>
+  </div>
+  <div className="card-3d rounded-3xl p-5 flex flex-wrap gap-1.5 justify-center items-center">
+    <span className="chip text-streak" title="Racha">🔥 {g.streak}</span>
+    <span className="chip text-gem" title="Gemas">💎 {g.gems}</span>
+    <span className="chip text-gold" title="XP">⚡ {g.xp} XP</span>
+  </div>
+</section>
+
         {current ? (
           <div className="card-3d pop-in rounded-3xl p-5 md:col-span-2">
             <p className="text-xs font-bold uppercase tracking-wide text-primary">🎯 {g.lang === "es" ? "Misión de hoy" : "Today's mission"}</p>
