@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import type React from "react";
 import { DEPARTMENTS } from "@/data/departments";
 
-export type Activity = "quiz" | "memory" | "tap" | "order";
+export type Activity = "quiz" | "memory" | "tap" | "order" | "locate";
 export type DeptProgress = { quiz?: number; memory?: boolean; tap?: boolean; order?: boolean; facts?: number[] };
 export type LogEntry = { at: string; dept: string; activity: Activity; score: number; max: number; xp: number };
 export type Lang = "es" | "en";
@@ -68,6 +68,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [s, loaded]);
 
   const complete = useCallback((dept: string, a: Activity, score: number, max: number) => {
+    // "locate" (práctica de localización en el mapa): solo registra en el log.
+    // Sin XP, gemas, coronas, progreso ni racha — reutiliza el log de evidencias existente.
+    if (a === "locate") {
+      setS((prev) => ({
+        ...prev,
+        log: [...prev.log, { at: new Date().toISOString(), dept, activity: a, score, max, xp: 0 }],
+      }));
+      return 0;
+    }
     const xp = a === "quiz" ? score * 10 : 15;
     const p = { ...(s.progress[dept] ?? {}) };
     const firstTime = a === "quiz" ? p.quiz === undefined : !p[a];

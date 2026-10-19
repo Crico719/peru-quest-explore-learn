@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AsistenteRouteImport } from './routes/asistente'
+import { Route as AventuraRouteImport } from './routes/aventura'
 import { Route as LogrosRouteImport } from './routes/logros'
 import { Route as PerfilRouteImport } from './routes/perfil'
+import { Route as PracticaRouteImport } from './routes/practica'
 import { Route as DepartamentoIdRouteImport } from './routes/departamento.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -25,6 +27,11 @@ const AsistenteRoute = AsistenteRouteImport.update({
   path: '/asistente',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AventuraRoute = AventuraRouteImport.update({
+  id: '/aventura',
+  path: '/aventura',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LogrosRoute = LogrosRouteImport.update({
   id: '/logros',
   path: '/logros',
@@ -33,6 +40,11 @@ const LogrosRoute = LogrosRouteImport.update({
 const PerfilRoute = PerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PracticaRoute = PracticaRouteImport.update({
+  id: '/practica',
+  path: '/practica',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DepartamentoIdRoute = DepartamentoIdRouteImport.update({
@@ -44,44 +56,68 @@ const DepartamentoIdRoute = DepartamentoIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/asistente': typeof AsistenteRoute
+  '/aventura': typeof AventuraRoute
   '/logros': typeof LogrosRoute
   '/perfil': typeof PerfilRoute
+  '/practica': typeof PracticaRoute
   '/departamento/$id': typeof DepartamentoIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/asistente': typeof AsistenteRoute
+  '/aventura': typeof AventuraRoute
   '/logros': typeof LogrosRoute
   '/perfil': typeof PerfilRoute
+  '/practica': typeof PracticaRoute
   '/departamento/$id': typeof DepartamentoIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/asistente': typeof AsistenteRoute
+  '/aventura': typeof AventuraRoute
   '/logros': typeof LogrosRoute
   '/perfil': typeof PerfilRoute
+  '/practica': typeof PracticaRoute
   '/departamento/$id': typeof DepartamentoIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/asistente' | '/logros' | '/perfil' | '/departamento/$id'
+  fullPaths:
+    | '/'
+    | '/asistente'
+    | '/aventura'
+    | '/logros'
+    | '/perfil'
+    | '/practica'
+    | '/departamento/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/asistente' | '/logros' | '/perfil' | '/departamento/$id'
+  to:
+    | '/'
+    | '/asistente'
+    | '/aventura'
+    | '/logros'
+    | '/perfil'
+    | '/practica'
+    | '/departamento/$id'
   id:
     | '__root__'
     | '/'
     | '/asistente'
+    | '/aventura'
     | '/logros'
     | '/perfil'
+    | '/practica'
     | '/departamento/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AsistenteRoute: typeof AsistenteRoute
+  AventuraRoute: typeof AventuraRoute
   LogrosRoute: typeof LogrosRoute
   PerfilRoute: typeof PerfilRoute
+  PracticaRoute: typeof PracticaRoute
   DepartamentoIdRoute: typeof DepartamentoIdRoute
 }
 
@@ -101,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AsistenteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/aventura': {
+      id: '/aventura'
+      path: '/aventura'
+      fullPath: '/aventura'
+      preLoaderRoute: typeof AventuraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/logros': {
       id: '/logros'
       path: '/logros'
@@ -113,6 +156,13 @@ declare module '@tanstack/react-router' {
       path: '/perfil'
       fullPath: '/perfil'
       preLoaderRoute: typeof PerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/practica': {
+      id: '/practica'
+      path: '/practica'
+      fullPath: '/practica'
+      preLoaderRoute: typeof PracticaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/departamento/$id': {
@@ -128,8 +178,10 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AsistenteRoute: AsistenteRoute,
+  AventuraRoute: AventuraRoute,
   LogrosRoute: LogrosRoute,
   PerfilRoute: PerfilRoute,
+  PracticaRoute: PracticaRoute,
   DepartamentoIdRoute: DepartamentoIdRoute,
 }
 export const routeTree = rootRouteImport

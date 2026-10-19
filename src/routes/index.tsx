@@ -176,6 +176,9 @@ function Index() {
             <button onClick={() => setPracticeMode(v => !v)} className="mt-2 btn-3d rounded-2xl px-4 py-2 text-sm font-bold">
               {practiceMode ? "🎯 Práctica: ON (toca un departamento)" : "🎯 Modo práctica: localización"}
             </button>
+            <Link to="/practica" className="mt-2 inline-block rounded-2xl border-2 border-white/40 bg-white/10 px-4 py-2 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/20">
+              🗺️ {g.lang === "es" ? "Mapa interactivo del Perú" : "Interactive map of Peru"}
+            </Link>
           </div>
           <dl className="grid grid-cols-2 gap-2 text-sm">
             {info.map(([k, v]) => (

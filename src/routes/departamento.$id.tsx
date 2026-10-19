@@ -57,7 +57,7 @@ function DeptPage() {
   const seen = p.facts ?? [];
   const L = (k: Parameters<typeof t>[1]) => t(g.lang, k);
 
-  const tabs: { k: Activity; icon: string; done: boolean }[] = [
+  const tabs: { k: Exclude<Activity, "locate">; icon: string; done: boolean }[] = [
     { k: "quiz", icon: "❓", done: (p.quiz ?? 0) >= 2 },
     { k: "memory", icon: "🃏", done: !!p.memory },
     { k: "tap", icon: "👆", done: !!p.tap },

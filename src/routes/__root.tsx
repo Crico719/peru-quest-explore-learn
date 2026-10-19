@@ -103,13 +103,21 @@ function BottomNav() {
     "flex flex-col items-center gap-0.5 rounded-2xl px-3 py-1.5 text-[11px] font-bold transition-all sm:text-xs";
   return (
     <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex w-[calc(100%-2rem)] max-w-md items-center justify-around rounded-full bg-white/95 px-4 py-2 shadow-2xl border border-border/60 backdrop-blur-md transition-all dark:bg-card/95">
-      <Link 
-        to="/" 
+      <Link
+        to="/"
+        activeProps={{ className: `${linkClass} bg-primary/15 text-primary scale-105` }}
+        inactiveProps={{ className: `${linkClass} text-muted-foreground hover:text-primary hover:bg-muted/60` }}
+      >
+        <span className="text-2xl" aria-hidden="true">🏠</span>
+        <span>Inicio</span>
+      </Link>
+      <Link
+        to="/practica"
         activeProps={{ className: `${linkClass} bg-primary/15 text-primary scale-105` }}
         inactiveProps={{ className: `${linkClass} text-muted-foreground hover:text-primary hover:bg-muted/60` }}
       >
         <span className="text-2xl" aria-hidden="true">🗺️</span>
-        <span>Inicio</span>
+        <span>Mapa</span>
       </Link>
       <Link 
         to="/logros" 
