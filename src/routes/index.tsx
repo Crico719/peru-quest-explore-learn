@@ -167,7 +167,7 @@ function Index() {
             </span>
             <div className="mt-3 flex items-center gap-4">
               <h1 className="text-4xl font-bold tracking-tight drop-shadow-md sm:text-6xl">PERÚ QUEST</h1>
-              <div className="relative cursor-pointer transition-transform duration-300 hover:scale-110" title="Inti tu mascota">
+              <div className="relative shrink-0 cursor-pointer overflow-hidden rounded-full bg-card p-1 shadow-xl ring-4 ring-white/50 transition-transform duration-300 hover:scale-110" title="Inti tu mascota">
                 <IntiMascot size={84} expression="happy" float alt="Inti, la mascota de PERÚ QUEST" className="drop-shadow-lg" />
               </div>
             </div>
@@ -336,12 +336,12 @@ function Index() {
           )}
         </div>
       ) : (
-        region === null && (
+        region !== null && (
         <div className="relative mx-auto mt-6 flex max-w-md flex-col items-center gap-6">
           <button onClick={() => setRegion(null)} className="self-start text-sm font-bold text-muted-foreground hover:text-foreground">
             ← {t(g.lang, "back")}
           </button>
-          {DEPARTMENTS.map((d, i) => node(d, i))}
+          {DEPARTMENTS.map((d, i) => (d.region === region ? node(d, i) : null))}
           <div className="text-5xl">🏆</div>
         </div>
         )
