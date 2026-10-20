@@ -67,7 +67,7 @@ export function Index() {
   const regions: ("Costa" | "Sierra" | "Selva")[] = ["Costa", "Sierra", "Selva"];
   const regionDepts = useMemo(() => (region ? getRegionDepts(region) : []), [region]);
   const regionPath = useMemo(
-    () => (region && regionDepts.length > 0 ? computeRegionPath(regionDepts) : { d: "", points: [], viewBox: "0 0 200 200" }),
+    () => (region && regionDepts.length > 0 ? computeRegionPath(regionDepts) : { d: "", points: [], viewBox: "0 0 200 200", maxY: 0 }),
     [region, regionDepts]
   );
 
@@ -139,8 +139,9 @@ export function Index() {
         className="pointer-events-auto"
         style={{
           position: "absolute",
-          left: Math.round(x - NODE_RADIUS),
-          top: Math.round(y - NODE_RADIUS),
+          left: `${x * 100}%`,
+          top: `${y * 100}%`,
+          transform: "translate(-50%, -50%)",
         }}
       >
         <button
@@ -167,7 +168,7 @@ export function Index() {
           </div>
           <span className="mt-2 text-sm font-bold transition-colors group-hover:text-primary">{d.name}</span>
           <div
-            className="absolute mt-44 left-1/2 -translate-x-1/2 h-2 w-16 overflow-hidden rounded-full bg-muted"
+            className="absolute -top-10 left-1/2 -translate-x-1/2 h-2 w-16 overflow-hidden rounded-full bg-muted"
             role="progressbar"
             aria-valuenow={pctDept}
             aria-valuemin={0}
@@ -176,7 +177,7 @@ export function Index() {
           >
             <div className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-600 transition-all" style={{ width: `${pctDept}%` }} />
           </div>
-          <span className="absolute mt-48 left-1/2 -translate-x-1/2 text-[10px] font-bold">{pctDept}%</span>
+          <span className="absolute -top-14 left-1/2 -translate-x-1/2 text-[10px] font-bold">{pctDept}%</span>
         </button>
       </div>
     );
@@ -358,48 +359,43 @@ export function Index() {
               {region === "Costa" ? t(g.lang, "coast") : region === "Sierra" ? t(g.lang, "highlands") : t(g.lang, "jungle")}
             </h3>
           </div>
-          {/* SVG: solo el sendero */}
-          <svg
-            className="w-full max-w-md h-auto block mx-auto"
-            viewBox={regionPath.viewBox}
-            preserveAspectRatio="xMidYMid meet"
-            aria-label={`Camino de ${region}`}
-          >
-            <path
-              d={regionPath.d}
-              stroke={PATH_STROKE}
-              strokeWidth="5"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="opacity-40"
-            />
-            <path
-              d={regionPath.d}
-              stroke="var(--primary)"
-              strokeWidth="3"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="opacity-70"
-            />
-          </svg>
-          {/* Capa HTML: nodos posicionados absolutamente sobre el SVG */}
+          {/* Contenedor con aspect ratio para que SVG y nodos se alineen en cualquier ancho */}
           <div
-            className="absolute inset-0 w-full max-w-md mx-auto pointer-events-none"
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              maxWidth: "320px",
-              marginLeft: "auto",
-              marginRight: "auto",
-            }}
+            className="relative w-full max-w-md mx-auto"
+            style={{ paddingBottom: `${regionPath.maxY * 100}%` }}
           >
-            {regionDepts.map((d, i) => (
-              <RegionNode key={d.id} d={d} idx={i} />
-            ))}
+            {/* SVG: solo el sendero */}
+            <svg
+              className="absolute inset-0 w-full h-full block"
+              viewBox={regionPath.viewBox}
+              preserveAspectRatio="xMidYMid meet"
+              aria-label={`Camino de ${region}`}
+            >
+              <path
+                d={regionPath.d}
+                stroke={PATH_STROKE}
+                strokeWidth="5"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="opacity-40"
+              />
+              <path
+                d={regionPath.d}
+                stroke="var(--primary)"
+                strokeWidth="3"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="opacity-70"
+              />
+            </svg>
+            {/* Capa HTML: nodos posicionados absolutamente sobre el SVG */}
+            <div className="absolute inset-0 w-full h-full pointer-events-none">
+              {regionDepts.map((d, i) => (
+                <RegionNode key={d.id} d={d} idx={i} />
+              ))}
+            </div>
           </div>
           <div className="text-5xl mx-auto mt-6 text-center">🏆</div>
         </div>

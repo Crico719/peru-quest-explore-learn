@@ -12,10 +12,10 @@ export function getRegionDepts(region: Region): Department[] {
 
 export function computeRegionPath(depts: Department[]) {
   const points: { x: number; y: number }[] = [];
-  const startX = 70;
-  const startY = 70;
-  const stepY = 115;
-  const amplitude = 42;
+  const startX = 0.35;
+  const startY = 0.12;
+  const stepY = 0.16;
+  const amplitude = 0.14;
 
   depts.forEach((_, i) => {
     const x = startX + Math.sin(i * 0.75) * amplitude;
@@ -26,19 +26,20 @@ export function computeRegionPath(depts: Department[]) {
   let d = "";
   points.forEach((p, i) => {
     if (i === 0) {
-      d += `M ${p.x} ${p.y} `;
+      d += `M ${p.x * 1000} ${p.y * 1000} `;
     } else {
       const prev = points[i - 1]!;
       const cp1x = prev.x + (p.x - prev.x) * 0.45;
       const cp1y = prev.y + (p.y - prev.y) * 0.35;
       const cp2x = p.x - (p.x - prev.x) * 0.45;
       const cp2y = p.y - (p.y - prev.y) * 0.35;
-      d += `C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p.x} ${p.y} `;
+      d += `C ${cp1x * 1000} ${cp1y * 1000}, ${cp2x * 1000} ${cp2y * 1000}, ${p.x * 1000} ${p.y * 1000} `;
     }
   });
 
-  const maxY = points.reduce((m, p) => Math.max(m, p.y), startY) + NODE_RADIUS + 30;
-  return { d, points, viewBox: `0 0 200 ${maxY}` };
+  const maxY = Math.max(...points.map((p) => p.y), startY) + 0.12;
+  const viewBoxHeight = Math.round(maxY * 1000);
+  return { d, points, viewBox: `0 0 1000 ${viewBoxHeight}`, maxY };
 }
 
 export function isRegionUnlocked(
