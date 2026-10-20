@@ -166,19 +166,27 @@ function Index() {
               🇵🇪 {g.lang === "es" ? "Nivel" : "Level"} {g.level}
             </span>
             <div className="mt-3 flex items-center gap-4">
-              <h1 className="text-4xl font-bold drop-shadow-sm sm:text-5xl">PERÚ QUEST</h1>
+              <h1 className="text-4xl font-bold tracking-tight drop-shadow-md sm:text-6xl">PERÚ QUEST</h1>
               <div className="relative cursor-pointer transition-transform duration-300 hover:scale-110" title="Inti tu mascota">
-                <IntiMascot size={64} expression="happy" float alt="Inti, la mascota de PERÚ QUEST" />
+                <IntiMascot size={84} expression="happy" float alt="Inti, la mascota de PERÚ QUEST" className="drop-shadow-lg" />
               </div>
             </div>
-            <p className="mt-2 text-lg font-medium drop-shadow-sm">{t(g.lang, "tagline")}</p>
-            <p className="mt-2 inline-flex rounded-2xl bg-black/25 px-3 py-1.5 text-sm font-semibold backdrop-blur-sm">🦉 {t(g.lang, "tip")}: {tip}</p>
-            <button onClick={() => setPracticeMode(v => !v)} className="mt-2 btn-3d rounded-2xl px-4 py-2 text-sm font-bold">
-              {practiceMode ? "🎯 Práctica: ON (toca un departamento)" : "🎯 Modo práctica: localización"}
-            </button>
-            <Link to="/practica" className="mt-2 inline-block rounded-2xl border-2 border-white/40 bg-white/10 px-4 py-2 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/20">
-              🗺️ {g.lang === "es" ? "Mapa interactivo del Perú" : "Interactive map of Peru"}
-            </Link>
+            <p className="mt-2 text-lg font-medium drop-shadow-sm sm:text-xl">{t(g.lang, "tagline")}</p>
+            <p className="mt-3 inline-flex rounded-2xl bg-black/25 px-3 py-1.5 text-sm font-semibold backdrop-blur-sm">🦉 {t(g.lang, "tip")}: {tip}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                onClick={() => setPracticeMode(v => !v)}
+                className={cn(
+                  "rounded-2xl border-2 px-4 py-2 text-sm font-bold backdrop-blur-sm transition-colors",
+                  practiceMode ? "border-white bg-white text-green-700" : "border-white/40 bg-white/10 text-white hover:bg-white/20"
+                )}
+              >
+                {practiceMode ? "🎯 Práctica: ON (toca un departamento)" : "🎯 Modo práctica: localización"}
+              </button>
+              <Link to="/practica" className="rounded-2xl border-2 border-white/40 bg-white/10 px-4 py-2 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/20">
+                🗺️ {g.lang === "es" ? "Mapa interactivo del Perú" : "Interactive map of Peru"}
+              </Link>
+            </div>
           </div>
           <dl className="grid grid-cols-2 gap-2 text-sm">
             {info.map(([k, v]) => (
@@ -188,10 +196,11 @@ function Index() {
               </div>
             ))}
           </dl>
-</div>
+        </div>
+      </section>
 
-{/* Estadísticas */}
-<section className="mt-6 grid gap-4 md:grid-cols-2">
+      {/* Estadísticas */}
+      <section className="mt-6 grid gap-4 md:grid-cols-2">
   <div className="card-3d rounded-3xl p-5 flex flex-col gap-2">
     <h3 className="text-sm font-bold uppercase text-muted-foreground">{t(g.lang, "progress")}</h3>
     <p className="text-2xl font-bold">👑 {totalCrowns} / {maxCrowns} coronas</p>
