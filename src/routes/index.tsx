@@ -123,7 +123,7 @@ function Index() {
         <button onClick={() => handleNodeSelect(d.id)} aria-label={d.name} className="group relative cursor-pointer transition-transform duration-200 motion-safe:hover:scale-105">
           <div className={cn("relative rounded-full", isCurrent && "node-current-ring")}>
             {/* Círculo progresivo (aro como Duolingo) */}
-            <svg className="h-28 w-28" viewBox="0 0 44 44" aria-hidden="true">
+            <svg className="h-24 w-24 sm:h-28 sm:w-28" viewBox="0 0 44 44" aria-hidden="true">
               <circle cx="22" cy="22" r="18" style={{ stroke: "var(--muted)" }} strokeWidth="4" fill="none" />
               {done
                 ? <circle cx="22" cy="22" r="18" style={{ stroke: "var(--gold)" }} strokeWidth="4" strokeLinecap="round" transform="rotate(-90 22 22)" strokeDasharray="113.1" />
@@ -132,8 +132,8 @@ function Index() {
             {/* Emoji encima del anillo */}
             <div className="absolute inset-0 flex items-center justify-center">
               {img
-                ? <img src={img} alt={d.name} className="h-20 w-20 rounded-full object-cover ring-2 ring-offset-2 ring-primary/20" />
-                : <span className="text-[36px] filter drop-shadow-md">{d.emoji}</span>}
+                ? <img src={img} alt={d.name} className="h-16 w-16 rounded-full object-cover ring-2 ring-offset-2 ring-primary/20 sm:h-20 sm:w-20" />
+                : <span className="text-[32px] filter drop-shadow-md sm:text-[36px]">{d.emoji}</span>}
               {isCurrent && <span className="absolute -top-1 -right-1 text-2xl animate-pulse" aria-label="Departamento actual">🔥</span>}
               {done && <span className="absolute -bottom-1 -right-1 text-xl" aria-label="Completado">🏆</span>}
             </div>
@@ -167,7 +167,7 @@ function Index() {
             </span>
             <div className="mt-3 flex items-center gap-4">
               <h1 className="text-4xl font-bold tracking-tight drop-shadow-md sm:text-6xl">PERÚ QUEST</h1>
-              <div className="relative cursor-pointer transition-transform duration-300 hover:scale-110" title="Inti tu mascota">
+              <div className="relative shrink-0 cursor-pointer overflow-hidden rounded-full bg-card p-1 shadow-xl ring-4 ring-white/50 transition-transform duration-300 hover:scale-110" title="Inti tu mascota">
                 <IntiMascot size={84} expression="happy" float alt="Inti, la mascota de PERÚ QUEST" className="drop-shadow-lg" />
               </div>
             </div>
@@ -207,12 +207,11 @@ function Index() {
     <Progress value={pct} className="mt-3 h-3" aria-label={`${t(g.lang, "progress")}: ${pct}%`} />
     <p className="mt-1 text-xs text-muted-foreground">{pct}% completado</p>
   </div>
-  <div className="card-3d rounded-3xl p-5 flex flex-wrap gap-1.5 justify-center items-center">
-    <span className="chip text-streak" title="Racha">🔥 {g.streak}</span>
-    <span className="chip text-gem" title="Gemas">💎 {g.gems}</span>
-    <span className="chip text-gold" title="XP">⚡ {g.xp} XP</span>
+  <div className="card-3d rounded-3xl p-5 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+    <span className="chip px-4 py-2 text-base text-streak" title="Racha">🔥 {g.streak}</span>
+    <span className="chip px-4 py-2 text-base text-gem" title="Gemas">💎 {g.gems}</span>
+    <span className="chip px-4 py-2 text-base text-gold" title="XP">⚡ {g.xp} XP</span>
   </div>
-</section>
 
         {current ? (
           <div className="card-3d pop-in rounded-3xl p-5 md:col-span-2">
@@ -253,13 +252,16 @@ function Index() {
       {/* Mapa */}
       <h2 id="camino" className="mt-10 text-center text-2xl font-bold">{t(g.lang, "path")}</h2>
       <div className="mx-auto mt-4 flex max-w-md flex-col gap-4">
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder={t(g.lang, "search")}
-          aria-label={t(g.lang, "search")}
-          className="rounded-2xl border-2 border-input bg-card px-4 py-3 font-semibold outline-none placeholder:text-muted-foreground focus:border-primary"
-        />
+        <div className="relative">
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden="true">🔍</span>
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={t(g.lang, "search")}
+            aria-label={t(g.lang, "search")}
+            className="w-full rounded-2xl border-2 border-input bg-card py-3 pl-11 pr-4 font-semibold shadow-sm outline-none transition-shadow placeholder:text-muted-foreground focus:border-primary focus:ring-4 focus:ring-primary/15"
+          />
+        </div>
       </div>
       {!filtering && region === null && (
         <div className="mx-auto mt-6 flex max-w-2xl flex-col gap-6">
@@ -293,6 +295,7 @@ function Index() {
                     </div>
                     <span className="text-xs font-bold">{pctR}%</span>
                     <span className="text-sm font-semibold">👑 {crowns}/{max}</span>
+                    {pctR === 100 && <span className="text-lg" title={g.lang === "es" ? "Región completada" : "Region completed"}>🏆</span>}
                   </div>
                   <button
                     onClick={() => setRegion(r)}
@@ -333,12 +336,12 @@ function Index() {
           )}
         </div>
       ) : (
-        region === null && (
+        region !== null && (
         <div className="relative mx-auto mt-6 flex max-w-md flex-col items-center gap-6">
           <button onClick={() => setRegion(null)} className="self-start text-sm font-bold text-muted-foreground hover:text-foreground">
             ← {t(g.lang, "back")}
           </button>
-          {DEPARTMENTS.map((d, i) => node(d, i))}
+          {DEPARTMENTS.map((d, i) => (d.region === region ? node(d, i) : null))}
           <div className="text-5xl">🏆</div>
         </div>
         )
