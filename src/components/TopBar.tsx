@@ -1,12 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { useGame } from "@/lib/game";
+import { IntiMascot } from "@/components/IntiMascot";
 
 export function TopBar() {
   const g = useGame();
   return (
     <header className="sticky top-0 z-30 border-b-2 border-border bg-background/90 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center gap-2 px-3 py-2 sm:gap-3">
-        <Link to="/" className="text-lg font-bold tracking-tight text-primary transition-transform hover:scale-105 sm:text-2xl" aria-label="PERÚ QUEST — Inicio">
+        <Link to="/" className="flex items-center gap-1.5 text-lg font-bold tracking-tight text-primary transition-transform hover:scale-105 sm:text-2xl" aria-label="PERÚ QUEST — Inicio">
+          <IntiMascot size={30} expression="happy" alt="" />
           PERÚ QUEST
         </Link>
         <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
