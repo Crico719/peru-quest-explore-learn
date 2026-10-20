@@ -175,6 +175,9 @@
   box-shadow: 0 4px 0 var(--primary-shadow);
   background: var(--primary);
   color: var(--primary-foreground);
+  cursor: pointer;
+  user-select: none;
+  &:hover { filter: brightness(1.06); }
   &:active { transform: translateY(4px); box-shadow: 0 0 0 var(--primary-shadow); }
   &:disabled { background: var(--locked); box-shadow: 0 4px 0 var(--locked-shadow); color: var(--muted-foreground); }
 }
@@ -278,6 +281,7 @@
   line-height: 1.25rem;
   box-shadow: 0 2px 0 var(--border);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
   &:hover { transform: translateY(-1px); box-shadow: 0 3px 0 var(--border); }
 }
 
