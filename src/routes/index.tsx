@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { DEPARTMENTS, PERU, REGION_EMOJI } from "@/data/departments";
 import { useGame, exportEvidence } from "@/lib/game";
 import { t } from "@/lib/i18n";
@@ -8,6 +8,41 @@ import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { PracticeModal } from "@/components/PracticeModal";
 import { IntiMascot } from "@/components/IntiMascot";
+
+const REGION_COLORS: Record<"Costa" | "Sierra" | "Selva", string> = {
+  Costa: "var(--primary)",
+  Sierra: "var(--accent)",
+  Selva: "var(--success)",
+};
+
+const PATH_STROKE = "var(--border)";
+const PATH_STROKE_ACTIVE = "var(--primary)";
+
+const NODE_SIZE = 44;
+const NODE_RADIUS = NODE_SIZE / 2;
+const GAP_BETWEEN_NODES = 78;
+
+function computePath(depts: (typeof DEPARTMENTS)[number][]) {
+  const points: { x: number; y: number }[] = [];
+  let x = NODE_RADIUS + 20;
+  let y = NODE_RADIUS + 20;
+  let dir = 1;
+
+  depts.forEach((_, i) => {
+    points.push({ x, y });
+    x += GAP_BETWEEN_NODES * dir;
+    if (i % 4 === 3) {
+      y += 90;
+      dir = -dir;
+    }
+  });
+
+  const d = points
+    .map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`))
+    .join(" ");
+
+  return { d, points };
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -55,6 +90,8 @@ function Index() {
   const [region, setRegion] = useState<"Costa" | "Sierra" | "Selva" | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [deptImages, setDeptImages] = useState<Record<string, string>>({});
+  const pathRef = useRef<SVGSVGElement>(null);
+  const svgPath = useMemo(() => computePath(DEPARTMENTS), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -110,32 +147,39 @@ function Index() {
   );
   const sel = selected ? DEPARTMENTS.find((d) => d.id === selected) : undefined;
 
-  const node = (d: (typeof DEPARTMENTS)[number], i: number) => {
+  const node = (d: (typeof DEPARTMENTS)[number], i: number, points: { x: number; y: number }[]) => {
     const c = g.crowns(d.id);
     const isCurrent = i === currentIdx;
-    const offset = Math.round(Math.sin(i * 0.9) * 90);
     const pctDept = Math.round((c / 4) * 100);
     const done = c === 4;
+    const locked = i > 0 && g.crowns(DEPARTMENTS[i - 1]!.id) < 1;
     const img = deptImages[d.id];
+    const { x, y } = points[i]!;
 
     return (
-      <div key={d.id} style={{ transform: `translateX(${offset}px)` }} className="flex flex-col items-center gap-2">
-        <button onClick={() => handleNodeSelect(d.id)} aria-label={d.name} className="group relative cursor-pointer transition-transform duration-200 motion-safe:hover:scale-105">
-          <div className={cn("relative rounded-full", isCurrent && "node-current-ring")}>
-            {/* Círculo progresivo (aro como Duolingo) */}
+      <div key={d.id} className="flex flex-col items-center gap-2">
+        <button
+          onClick={() => handleNodeSelect(d.id)}
+          disabled={locked}
+          aria-label={d.name}
+          className="group relative cursor-pointer transition-transform duration-200 motion-safe:hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ transform: `translate(${x - NODE_RADIUS}px, ${y - NODE_RADIUS}px)` }}
+        >
+          <div className="relative rounded-full">
+            {/* Círculo progresivo */}
             <svg className="h-28 w-28" viewBox="0 0 44 44" aria-hidden="true">
-              <circle cx="22" cy="22" r="18" style={{ stroke: "var(--muted)" }} strokeWidth="4" fill="none" />
+              <circle cx="22" cy="22" r="18" style={{ stroke: PATH_STROKE }} strokeWidth="4" fill="none" />
               {done
                 ? <circle cx="22" cy="22" r="18" style={{ stroke: "var(--gold)" }} strokeWidth="4" strokeLinecap="round" transform="rotate(-90 22 22)" strokeDasharray="113.1" />
-                : <circle cx="22" cy="22" r="18" style={{ stroke: "var(--primary)", strokeDasharray: `${(c / 4) * 113.1}, 113.1` }} strokeWidth="4" strokeLinecap="round" transform="rotate(-90 22 22)" />}
+                : <circle cx="22" cy="22" r="18" style={{ stroke: PATH_STROKE_ACTIVE, strokeDasharray: `${(c / 4) * 113.1}, 113.1` }} strokeWidth="4" strokeLinecap="round" transform="rotate(-90 22 22)" />}
             </svg>
-            {/* Emoji encima del anillo */}
             <div className="absolute inset-0 flex items-center justify-center">
               {img
                 ? <img src={img} alt={d.name} className="h-20 w-20 rounded-full object-cover ring-2 ring-offset-2 ring-primary/20" />
                 : <span className="text-[36px] filter drop-shadow-md">{d.emoji}</span>}
-              {isCurrent && <span className="absolute -top-1 -right-1 text-2xl animate-pulse" aria-label="Departamento actual">🔥</span>}
+              {isCurrent && !locked && <span className="absolute -top-1 -right-1 text-2xl animate-pulse" aria-label="Departamento actual">🔥</span>}
               {done && <span className="absolute -bottom-1 -right-1 text-xl" aria-label="Completado">🏆</span>}
+              {locked && <span className="absolute bottom-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[24px]" aria-label="Bloqueado">🔒</span>}
             </div>
           </div>
           <span className="mt-2 text-sm font-bold transition-colors group-hover:text-primary">{d.name}</span>
@@ -325,12 +369,47 @@ function Index() {
         </div>
       ) : (
         region === null && (
-        <div className="relative mx-auto mt-6 flex max-w-md flex-col items-center gap-6">
-          <button onClick={() => setRegion(null)} className="self-start text-sm font-bold text-muted-foreground hover:text-foreground">
+        <div className="relative mx-auto mt-6 max-w-[calc(100vw-2rem)]">
+          <button onClick={() => setRegion(null)} className="self-start text-sm font-bold text-muted-foreground hover:text-foreground mb-4">
             ← {t(g.lang, "back")}
           </button>
-          {DEPARTMENTS.map((d, i) => node(d, i))}
-          <div className="text-5xl">🏆</div>
+          <svg
+            ref={pathRef}
+            className="w-full max-w-md h-auto block mx-auto"
+            viewBox="0 0 640 420"
+            preserveAspectRatio="xMidYMid meet"
+            aria-label="Camino de departamentos del Perú"
+          >
+            {/* Trazado continuo estilo Qhapaq Ñan */}
+            <path
+              d={svgPath.d}
+              stroke={PATH_STROKE}
+              strokeWidth="6"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="opacity-40"
+            />
+            <path
+              d={svgPath.d}
+              stroke="url(#caminoGradiente)"
+              strokeWidth="4"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="opacity-60"
+            />
+            <defs>
+              <linearGradient id="caminoGradiente" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="var(--primary)" />
+                <stop offset="33%" stopColor="var(--accent)" />
+                <stop offset="66%" stopColor="var(--success)" />
+                <stop offset="100%" stopColor="var(--primary)" />
+              </linearGradient>
+            </defs>
+            {DEPARTMENTS.map((d, i) => node(d, i, svgPath.points))}
+          </svg>
+          <div className="text-5xl mx-auto mt-4 text-center">🏆</div>
         </div>
         )
       )}
