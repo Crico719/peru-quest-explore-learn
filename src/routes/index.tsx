@@ -212,7 +212,6 @@ function Index() {
     <span className="chip text-gem" title="Gemas">💎 {g.gems}</span>
     <span className="chip text-gold" title="XP">⚡ {g.xp} XP</span>
   </div>
-</section>
 
         {current ? (
           <div className="card-3d pop-in rounded-3xl p-5 md:col-span-2">
