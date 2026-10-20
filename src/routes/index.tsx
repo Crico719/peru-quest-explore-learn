@@ -8,45 +8,14 @@ import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { PracticeModal } from "@/components/PracticeModal";
 import { IntiMascot } from "@/components/IntiMascot";
-
-const PATH_STROKE = "var(--border)";
-const NODE_SIZE = 44;
-const NODE_RADIUS = NODE_SIZE / 2;
-
-function getRegionDepts(region: "Costa" | "Sierra" | "Selva") {
-  return DEPARTMENTS.filter((d) => d.region === region);
-}
-
-function computeRegionPath(depts: (typeof DEPARTMENTS)[number][]) {
-  const points: { x: number; y: number }[] = [];
-  const startX = 70;
-  const startY = 70;
-  const stepY = 115;
-  const amplitude = 42;
-
-  depts.forEach((_, i) => {
-    const x = startX + Math.sin(i * 0.75) * amplitude;
-    const y = startY + i * stepY;
-    points.push({ x, y });
-  });
-
-  let d = "";
-  points.forEach((p, i) => {
-    if (i === 0) {
-      d += `M ${p.x} ${p.y} `;
-    } else {
-      const prev = points[i - 1]!;
-      const cp1x = prev.x + (p.x - prev.x) * 0.45;
-      const cp1y = prev.y + (p.y - prev.y) * 0.35;
-      const cp2x = p.x - (p.x - prev.x) * 0.45;
-      const cp2y = p.y - (p.y - prev.y) * 0.35;
-      d += `C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p.x} ${p.y} `;
-    }
-  });
-
-  const maxY = points.reduce((m, p) => Math.max(m, p.y), startY) + NODE_RADIUS + 30;
-  return { d, points, viewBox: `0 0 200 ${maxY}` };
-}
+import {
+  computeRegionPath,
+  getRegionDepts,
+  isRegionUnlocked,
+  NODE_RADIUS,
+  PATH_STROKE,
+  type Region,
+} from "@/lib/region";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -85,7 +54,7 @@ const REGION_THEME: Record<"Costa" | "Sierra" | "Selva", { border: string; bar: 
   Selva: { border: "hover:border-emerald-400", bar: "from-emerald-400 to-green-600", blob: "from-emerald-400/25 to-green-300/10" },
 };
 
-function Index() {
+export function Index() {
   const g = useGame();
   const { data: hero } = useWikiImage("Machu_Picchu");
   const [q, setQ] = useState("");
@@ -156,17 +125,11 @@ function Index() {
   );
   const sel = selected ? DEPARTMENTS.find((d) => d.id === selected) : undefined;
 
-  const isRegionUnlocked = (idx: number) => {
-    if (idx === 0) return true;
-    const prev = regionDepts[idx - 1]!;
-    return g.crowns(prev.id) >= 1;
-  };
-
   const RegionNode = ({ d, idx }: { d: (typeof DEPARTMENTS)[number]; idx: number }) => {
     const c = g.crowns(d.id);
     const pctDept = Math.round((c / 4) * 100);
     const done = c === 4;
-    const locked = !isRegionUnlocked(idx);
+    const locked = !isRegionUnlocked(idx, regionDepts, (id) => g.crowns(id));
     const img = deptImages[d.id];
     const { x, y } = regionPath.points[idx]!;
 
