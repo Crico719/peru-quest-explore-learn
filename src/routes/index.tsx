@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { DEPARTMENTS, PERU, REGION_EMOJI } from "@/data/departments";
 import { useGame, exportEvidence } from "@/lib/game";
 import { t } from "@/lib/i18n";
@@ -9,39 +9,43 @@ import { Progress } from "@/components/ui/progress";
 import { PracticeModal } from "@/components/PracticeModal";
 import { IntiMascot } from "@/components/IntiMascot";
 
-const REGION_COLORS: Record<"Costa" | "Sierra" | "Selva", string> = {
-  Costa: "var(--primary)",
-  Sierra: "var(--accent)",
-  Selva: "var(--success)",
-};
-
 const PATH_STROKE = "var(--border)";
-const PATH_STROKE_ACTIVE = "var(--primary)";
-
 const NODE_SIZE = 44;
 const NODE_RADIUS = NODE_SIZE / 2;
-const GAP_BETWEEN_NODES = 78;
 
-function computePath(depts: (typeof DEPARTMENTS)[number][]) {
+function getRegionDepts(region: "Costa" | "Sierra" | "Selva") {
+  return DEPARTMENTS.filter((d) => d.region === region);
+}
+
+function computeRegionPath(depts: (typeof DEPARTMENTS)[number][]) {
   const points: { x: number; y: number }[] = [];
-  let x = NODE_RADIUS + 20;
-  let y = NODE_RADIUS + 20;
-  let dir = 1;
+  const startX = 70;
+  const startY = 70;
+  const stepY = 115;
+  const amplitude = 42;
 
   depts.forEach((_, i) => {
+    const x = startX + Math.sin(i * 0.75) * amplitude;
+    const y = startY + i * stepY;
     points.push({ x, y });
-    x += GAP_BETWEEN_NODES * dir;
-    if (i % 4 === 3) {
-      y += 90;
-      dir = -dir;
+  });
+
+  let d = "";
+  points.forEach((p, i) => {
+    if (i === 0) {
+      d += `M ${p.x} ${p.y} `;
+    } else {
+      const prev = points[i - 1]!;
+      const cp1x = prev.x + (p.x - prev.x) * 0.45;
+      const cp1y = prev.y + (p.y - prev.y) * 0.35;
+      const cp2x = p.x - (p.x - prev.x) * 0.45;
+      const cp2y = p.y - (p.y - prev.y) * 0.35;
+      d += `C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p.x} ${p.y} `;
     }
   });
 
-  const d = points
-    .map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`))
-    .join(" ");
-
-  return { d, points };
+  const maxY = points.reduce((m, p) => Math.max(m, p.y), startY) + NODE_RADIUS + 30;
+  return { d, points, viewBox: `0 0 200 ${maxY}` };
 }
 
 export const Route = createFileRoute("/")({
@@ -90,8 +94,13 @@ function Index() {
   const [region, setRegion] = useState<"Costa" | "Sierra" | "Selva" | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [deptImages, setDeptImages] = useState<Record<string, string>>({});
-  const pathRef = useRef<SVGSVGElement>(null);
-  const svgPath = useMemo(() => computePath(DEPARTMENTS), []);
+
+  const regions: ("Costa" | "Sierra" | "Selva")[] = ["Costa", "Sierra", "Selva"];
+  const regionDepts = useMemo(() => (region ? getRegionDepts(region) : []), [region]);
+  const regionPath = useMemo(
+    () => (region && regionDepts.length > 0 ? computeRegionPath(regionDepts) : { d: "", points: [], viewBox: "0 0 200 200" }),
+    [region, regionDepts]
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -134,57 +143,68 @@ function Index() {
       ]
     : [];
   const tip = TIPS[g.lang][new Date().getDate() % TIPS[g.lang].length];
-  const regions: ("Costa" | "Sierra" | "Selva")[] = ["Costa", "Sierra", "Selva"];
   const filtering = q.trim() !== "";
   const navigate = useNavigate();
   const handleNodeSelect = (id: string) => {
     if (practiceMode) setSelectedDept(id);
     else navigate({ to: "/departamento/$id", params: { id } });
   };
+
   const visible = DEPARTMENTS.map((d, i) => ({ d, i })).filter(
     (x) => (!region || x.d.region === region) &&
       x.d.name.toLowerCase().includes(q.trim().toLowerCase())
   );
   const sel = selected ? DEPARTMENTS.find((d) => d.id === selected) : undefined;
 
-  const node = (d: (typeof DEPARTMENTS)[number], i: number, points: { x: number; y: number }[]) => {
+  const isRegionUnlocked = (idx: number) => {
+    if (idx === 0) return true;
+    const prev = regionDepts[idx - 1]!;
+    return g.crowns(prev.id) >= 1;
+  };
+
+  const RegionNode = ({ d, idx }: { d: (typeof DEPARTMENTS)[number]; idx: number }) => {
     const c = g.crowns(d.id);
-    const isCurrent = i === currentIdx;
     const pctDept = Math.round((c / 4) * 100);
     const done = c === 4;
-    const locked = i > 0 && g.crowns(DEPARTMENTS[i - 1]!.id) < 1;
+    const locked = !isRegionUnlocked(idx);
     const img = deptImages[d.id];
-    const { x, y } = points[i]!;
+    const { x, y } = regionPath.points[idx]!;
 
     return (
-      <div key={d.id} className="flex flex-col items-center gap-2">
+      <div
+        key={d.id}
+        className="pointer-events-auto"
+        style={{
+          position: "absolute",
+          left: Math.round(x - NODE_RADIUS),
+          top: Math.round(y - NODE_RADIUS),
+        }}
+      >
         <button
           onClick={() => handleNodeSelect(d.id)}
           disabled={locked}
           aria-label={d.name}
           className="group relative cursor-pointer transition-transform duration-200 motion-safe:hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ transform: `translate(${x - NODE_RADIUS}px, ${y - NODE_RADIUS}px)` }}
         >
-          <div className={cn("relative rounded-full", isCurrent && "node-current-ring")}>
-            {/* Círculo progresivo */}
+          <div className="relative rounded-full">
             <svg className="h-24 w-24 sm:h-28 sm:w-28" viewBox="0 0 44 44" aria-hidden="true">
               <circle cx="22" cy="22" r="18" style={{ stroke: PATH_STROKE }} strokeWidth="4" fill="none" />
               {done
                 ? <circle cx="22" cy="22" r="18" style={{ stroke: "var(--gold)" }} strokeWidth="4" strokeLinecap="round" transform="rotate(-90 22 22)" strokeDasharray="113.1" />
-                : <circle cx="22" cy="22" r="18" style={{ stroke: PATH_STROKE_ACTIVE, strokeDasharray: `${(c / 4) * 113.1}, 113.1` }} strokeWidth="4" strokeLinecap="round" transform="rotate(-90 22 22)" />}
+                : <circle cx="22" cy="22" r="18" style={{ stroke: "var(--primary)", strokeDasharray: `${(c / 4) * 113.1}, 113.1` }} strokeWidth="4" strokeLinecap="round" transform="rotate(-90 22 22)" />}
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
               {img
                 ? <img src={img} alt={d.name} className="h-16 w-16 rounded-full object-cover ring-2 ring-offset-2 ring-primary/20 sm:h-20 sm:w-20" />
                 : <span className="text-[32px] filter drop-shadow-md sm:text-[36px]">{d.emoji}</span>}
-              {isCurrent && !locked && <span className="absolute -top-1 -right-1 text-2xl animate-pulse" aria-label="Departamento actual">🔥</span>}
-              {done && <span className="absolute -bottom-1 -right-1 text-xl" aria-label="Completado">🏆</span>}
-              {locked && <span className="absolute bottom-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[24px]" aria-label="Bloqueado">🔒</span>}
+              {!locked && done && <span className="absolute -bottom-1 -right-1 text-xl" aria-label="Completado">🏆</span>}
+              {!locked && c > 0 && c < 4 && <span className="absolute -top-1 -right-1 text-[14px]" aria-label="Progreso">👑</span>}
+              {locked && <span className="absolute bottom-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[20px]" aria-label="Bloqueado">🔒</span>}
             </div>
           </div>
           <span className="mt-2 text-sm font-bold transition-colors group-hover:text-primary">{d.name}</span>
           <div
-            className="mt-1 h-2 w-16 overflow-hidden rounded-full bg-muted"
+            className="absolute mt-44 left-1/2 -translate-x-1/2 h-2 w-16 overflow-hidden rounded-full bg-muted"
             role="progressbar"
             aria-valuenow={pctDept}
             aria-valuemin={0}
@@ -193,14 +213,14 @@ function Index() {
           >
             <div className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-600 transition-all" style={{ width: `${pctDept}%` }} />
           </div>
-          <span className="text-[10px] font-bold">{pctDept}%</span>
+          <span className="absolute mt-48 left-1/2 -translate-x-1/2 text-[10px] font-bold">{pctDept}%</span>
         </button>
       </div>
     );
   };
 
   return (
-    <main className="mx-auto max-w-5xl px-4 pb-24">
+    <main className="mx-auto max-w-5xl px-4 pb-28">
       {/* Hero */}
       <section className="relative mt-4 overflow-hidden rounded-3xl text-white shadow-xl hero-anim">
         {hero && <img src={hero} alt="Machu Picchu" className="absolute inset-0 h-full w-full object-cover opacity-25" />}
@@ -245,17 +265,17 @@ function Index() {
 
       {/* Estadísticas */}
       <section className="mt-6 grid gap-4 md:grid-cols-2">
-  <div className="card-3d rounded-3xl p-5 flex flex-col gap-2">
-    <h3 className="text-sm font-bold uppercase text-muted-foreground">{t(g.lang, "progress")}</h3>
-    <p className="text-2xl font-bold">👑 {totalCrowns} / {maxCrowns} coronas</p>
-    <Progress value={pct} className="mt-3 h-3" aria-label={`${t(g.lang, "progress")}: ${pct}%`} />
-    <p className="mt-1 text-xs text-muted-foreground">{pct}% completado</p>
-  </div>
-  <div className="card-3d rounded-3xl p-5 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-    <span className="chip px-4 py-2 text-base text-streak" title="Racha">🔥 {g.streak}</span>
-    <span className="chip px-4 py-2 text-base text-gem" title="Gemas">💎 {g.gems}</span>
-    <span className="chip px-4 py-2 text-base text-gold" title="XP">⚡ {g.xp} XP</span>
-  </div>
+        <div className="card-3d rounded-3xl p-5 flex flex-col gap-2">
+          <h3 className="text-sm font-bold uppercase text-muted-foreground">{t(g.lang, "progress")}</h3>
+          <p className="text-2xl font-bold">👑 {totalCrowns} / {maxCrowns} coronas</p>
+          <Progress value={pct} className="mt-3 h-3" aria-label={`${t(g.lang, "progress")}: ${pct}%`} />
+          <p className="mt-1 text-xs text-muted-foreground">{pct}% completado</p>
+        </div>
+        <div className="card-3d rounded-3xl p-5 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+          <span className="chip px-4 py-2 text-base text-streak" title="Racha">🔥 {g.streak}</span>
+          <span className="chip px-4 py-2 text-base text-gem" title="Gemas">💎 {g.gems}</span>
+          <span className="chip px-4 py-2 text-base text-gold" title="XP">⚡ {g.xp} XP</span>
+        </div>
 
         {current ? (
           <div className="card-3d pop-in rounded-3xl p-5 md:col-span-2">
@@ -295,7 +315,9 @@ function Index() {
 
       {/* Mapa */}
       <h2 id="camino" className="mt-10 text-center text-2xl font-bold">{t(g.lang, "path")}</h2>
-      <div className="mx-auto mt-4 flex max-w-md flex-col gap-4">
+
+      {/* Buscador */}
+      <div className="mx-auto mt-4 max-w-md">
         <div className="relative">
           <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden="true">🔍</span>
           <input
@@ -307,13 +329,15 @@ function Index() {
           />
         </div>
       </div>
+
+      {/* Pantalla A: Selector de regiones (solo cuando region === null y no hay filtro) */}
       {!filtering && region === null && (
         <div className="mx-auto mt-6 flex max-w-2xl flex-col gap-6">
           {regions.map((r) => {
+            const depts = getRegionDepts(r);
             const label = r === "Costa" ? t(g.lang, "coast") : r === "Sierra" ? t(g.lang, "highlands") : t(g.lang, "jungle");
             const desc = r === "Costa" ? "Litoral pacífico, desiertos y playas" : r === "Sierra" ? "Andes, valles y altiplano" : "Amazonía, selva y ríos";
             const emoji = REGION_EMOJI[r];
-            const depts = DEPARTMENTS.filter((d) => d.region === r);
             const crowns = depts.reduce((n, d) => n + g.crowns(d.id), 0);
             const max = depts.length * 4;
             const pctR = Math.round((crowns / max) * 100);
@@ -355,6 +379,70 @@ function Index() {
           })}
         </div>
       )}
+
+      {/* Pantalla B: Camino de la región seleccionada (solo cuando region !== null y no hay filtro) */}
+      {!filtering && region !== null && (
+        <div className="relative mx-auto mt-6 max-w-md pb-28">
+          <button
+            onClick={() => setRegion(null)}
+            className="self-start text-sm font-bold text-muted-foreground hover:text-foreground mb-4"
+          >
+            ← {t(g.lang, "back")}
+          </button>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-xl">{REGION_EMOJI[region]}</span>
+            <h3 className="text-xl font-bold">
+              {region === "Costa" ? t(g.lang, "coast") : region === "Sierra" ? t(g.lang, "highlands") : t(g.lang, "jungle")}
+            </h3>
+          </div>
+          {/* SVG: solo el sendero */}
+          <svg
+            className="w-full max-w-md h-auto block mx-auto"
+            viewBox={regionPath.viewBox}
+            preserveAspectRatio="xMidYMid meet"
+            aria-label={`Camino de ${region}`}
+          >
+            <path
+              d={regionPath.d}
+              stroke={PATH_STROKE}
+              strokeWidth="5"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="opacity-40"
+            />
+            <path
+              d={regionPath.d}
+              stroke="var(--primary)"
+              strokeWidth="3"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="opacity-70"
+            />
+          </svg>
+          {/* Capa HTML: nodos posicionados absolutamente sobre el SVG */}
+          <div
+            className="absolute inset-0 w-full max-w-md mx-auto pointer-events-none"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              maxWidth: "320px",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+          >
+            {regionDepts.map((d, i) => (
+              <RegionNode key={d.id} d={d} idx={i} />
+            ))}
+          </div>
+          <div className="text-5xl mx-auto mt-6 text-center">🏆</div>
+        </div>
+      )}
+
+      {/* Pantalla C: Resultados de búsqueda (solo cuando hay filtro) */}
       {filtering ? (
         <div className="mx-auto mt-6 grid max-w-2xl grid-cols-2 gap-3 sm:grid-cols-3">
           {visible.map(({ d }) => (
@@ -379,59 +467,8 @@ function Index() {
             </div>
           )}
         </div>
-      ) : region === null ? (
-        <div className="relative mx-auto mt-6 max-w-[calc(100vw-2rem)]">
-          <button onClick={() => setRegion(null)} className="self-start text-sm font-bold text-muted-foreground hover:text-foreground mb-4">
-            ← {t(g.lang, "back")}
-          </button>
-          <svg
-            ref={pathRef}
-            className="w-full max-w-md h-auto block mx-auto"
-            viewBox="0 0 640 420"
-            preserveAspectRatio="xMidYMid meet"
-            aria-label="Camino de departamentos del Perú"
-          >
-            {/* Trazado continuo estilo Qhapaq Ñan */}
-            <path
-              d={svgPath.d}
-              stroke={PATH_STROKE}
-              strokeWidth="6"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="opacity-40"
-            />
-            <path
-              d={svgPath.d}
-              stroke="url(#caminoGradiente)"
-              strokeWidth="4"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="opacity-60"
-            />
-            <defs>
-              <linearGradient id="caminoGradiente" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="var(--primary)" />
-                <stop offset="33%" stopColor="var(--accent)" />
-                <stop offset="66%" stopColor="var(--success)" />
-                <stop offset="100%" stopColor="var(--primary)" />
-              </linearGradient>
-            </defs>
-            {DEPARTMENTS.map((d, i) => node(d, i, svgPath.points))}
-          </svg>
-          <div className="text-5xl mx-auto mt-4 text-center">🏆</div>
-        </div>
-        ) : region !== null ? (
-        <div className="relative mx-auto mt-6 flex max-w-md flex-col items-center gap-6">
-          <button onClick={() => setRegion(null)} className="self-start text-sm font-bold text-muted-foreground hover:text-foreground">
-            ← {t(g.lang, "back")}
-          </button>
-          {DEPARTMENTS.map((d, i) => (d.region === region ? node(d, i, svgPath.points) : null))}
-          <div className="text-5xl">🏆</div>
-        </div>
-        ) : null
-      }
+      ) : null}
+
       {sel && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-4 sm:items-center" onClick={() => setSelected(null)}>
           <div className="pop-in w-full max-w-md rounded-3xl bg-card p-5 shadow-2xl" onClick={(e) => e.stopPropagation()}>
